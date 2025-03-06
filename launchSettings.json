@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "leadshub.api": "StartDebugging",
+        "whatsapp.api": "StartDebugging"
+      }
+    }
+  }
+}

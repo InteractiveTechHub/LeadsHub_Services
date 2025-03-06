@@ -1,0 +1,75 @@
+﻿
+namespace LeadsHub.Core.Models
+{
+    public class Timeline : BaseModel
+    {
+        /// <summary>
+        /// Company representant that the lead is talking with
+        /// </summary>
+        public long? ConsultantId { get; set; }
+
+        /// <summary>
+        /// The lead Id
+        /// </summary>
+        public long LeadId { get; set; }
+
+        /// <summary>
+        /// The message Id of the external system
+        /// </summary>
+        public string MessageId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The message date of the external system
+        /// or sent by our system
+        /// </summary>
+        public DateTimeOffset MessageDate { get; set; }
+
+        /// <summary>
+        /// The message file Id
+        /// </summary>
+        public long? MessageFileId { get; set; }
+
+        public long? MessageReactionId { get; set; }
+
+        /// <summary>
+        /// The message text Id
+        /// </summary>
+        public long? MessageTextId { get; set; }
+
+        /// <summary>
+        /// The date time that the message was read.
+        /// </summary>
+        public DateTimeOffset? ReadAt { get; set; }
+
+        /// <summary>
+        /// Who sent the message (Lead or Consultant)
+        /// </summary>
+        public int Sender { get; set; }
+
+        /// <summary>
+        /// The status of the message (Ex.: Pedding, Sent, Read, etc)
+        /// </summary>
+        public int Status { get; set; } = 1;
+
+        /// <summary>
+        /// The message type (Ex.: Text, Image, Video, template, etc)
+        /// </summary>
+        public int Type { get; set; }
+
+        public MessageText? Message { get; set; }
+
+        public MessageFile? MessageFile { get; set; }
+
+        public MessageReaction? MessageReaction { get; set; }
+
+        public void SetMessageFile(MessageFile messageFile) 
+        {
+            if (messageFile is null || string.IsNullOrWhiteSpace(messageFile.Url))
+            {
+                return;
+            }
+
+            MessageFile = (messageFile);
+        }
+    }
+}

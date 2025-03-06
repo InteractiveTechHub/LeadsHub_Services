@@ -1,0 +1,22 @@
+networks:
+  interactive_net:
+    external: true
+  pgadmin4_net:
+    external: true
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.0.5-management
+
+  leadshub_api:
+    image: ${DOCKER_REGISTRY-}leadshubapi
+    build:
+      context: .
+      dockerfile: Services/LeadsHub/LeadsHub.Api/Dockerfile
+
+  whatsapp_api:
+    image: ${DOCKER_REGISTRY-}whatsappapi
+    build:
+      context: .
+      dockerfile: Integrations/WhatsApp/WhatsApp.Api/Dockerfile
+

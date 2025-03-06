@@ -1,0 +1,33 @@
+services:
+  leadshub_api:
+    container_name: leadshub_Api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    networks:
+      interactive_net:
+        ipv4_address: 172.19.0.11
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  whatsapp_api:
+    container_name: whatsapp_api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+     ## - ASPNETCORE_HTTPS_PORTS=8081
+    networks:
+      interactive_net:
+        ipv4_address: 172.19.0.12
+    ports:
+      - "7000:8080"
+      - "7001:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
