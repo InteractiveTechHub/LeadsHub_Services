@@ -28,6 +28,9 @@ jobs:
           file: Services/LeadsHub/LeadsHub.Api/Dockerfile
           push: true
           tags: jsglobaltech/leadhub_webapi:${{ github.sha }}
+          build-args: |
+            ASPNETCORE_ENVIRONMENT=production
+            ASPNETCORE_HTTP_PORTS=8080
 
   transfer:
     runs-on: ubuntu-latest
@@ -43,7 +46,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           #key: ${{ secrets.VPS_SSH_KEY }}
-          source: "${{ github.workspace }}/docker-compose.webapi.yml"
+          source: "${{ github.workspace }}/docker-compose.services.yml"
           target: "/opt/leadshub"
 
   deploy:
@@ -59,7 +62,7 @@ jobs:
           #key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /opt/leadshub
-            sudo docker-compose -f docker-compose.webapi.yml config
-            sudo docker-compose -f docker-compose.webapi pull
-            sudo docker-compose -f docker-compose.webapi.yml up -d --no-deps --build --remove-orphans
+            sudo docker-compose -f docker-compose.services.yml config
+            sudo docker-compose -f docker-compose.services pull
+            sudo docker-compose -f docker-compose.services.yml up -d --no-deps --build --remove-orphans
             sudo docker system prune -f
