@@ -31,7 +31,7 @@ SD.WhatAppApiUrl = configuration.GetValue<string>("ApiUrl:WhatsAppApi") ?? strin
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost:4200", "http://localhost", "http://http://93.127.215.157")
+        builder.WithOrigins("http://localhost:4200", "http://localhost", "http://http://93.127.215.157", "http://jsdesenvolvimento.shop/")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
