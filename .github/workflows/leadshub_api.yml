@@ -67,5 +67,5 @@ jobs:
             cd /opt/leadshub/github/workspace
             sudo docker-compose -f docker-compose.services.yml config
             sudo docker-compose -f docker-compose.services pull
-            sudo docker-compose -f docker-compose.services.yml up -d --no-deps --build --remove-orphans
+            sudo docker-compose -f docker-compose.services.yml up -d --no-deps --build
             sudo docker system prune -f
