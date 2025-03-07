@@ -48,6 +48,7 @@ jobs:
           #key: ${{ secrets.VPS_SSH_KEY }}
           source: "docker-compose.services.yml"
           target: "/opt/leadshub"
+          strip_components: 1 
 
   deploy:
     runs-on: ubuntu-latest
