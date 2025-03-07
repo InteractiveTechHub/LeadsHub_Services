@@ -48,7 +48,7 @@ jobs:
           #key: ${{ secrets.VPS_SSH_KEY }}
           source: "docker-compose.services.yml"
           target: "/opt/leadshub"
-          strip_components: 1 
+          #strip_components: 1 
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           #key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /opt/leadshub
+            cd /opt/leadshub/github/workspace
             sudo docker-compose -f docker-compose.services.yml config
             sudo docker-compose -f docker-compose.services pull
             sudo docker-compose -f docker-compose.services.yml up -d --no-deps --build --remove-orphans
