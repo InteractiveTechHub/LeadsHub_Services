@@ -27,10 +27,12 @@ jobs:
           context: .
           file: Services/LeadsHub/LeadsHub.Api/Dockerfile
           push: true
-          tags: jsglobaltech/leadhub_webapi:${{ github.sha }}
           build-args: |
             ASPNETCORE_ENVIRONMENT=production
             ASPNETCORE_HTTP_PORTS=8080
+          tags: | 
+              jsglobaltech/leadshub_webapi:latest
+              jsglobaltech/leadshub_webapi:${{ github.sha }}
 
   transfer:
     runs-on: ubuntu-latest
