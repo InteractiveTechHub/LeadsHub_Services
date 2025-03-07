@@ -1,13 +1,8 @@
 networks:
   interactive_net:
     external: true
-  pgadmin4_net:
-    external: true
 
 services:
-  rabbitmq:
-    image: rabbitmq:4.0.5-management
-
   leadshub_api:
     image: ${DOCKER_REGISTRY-}leadshubapi
     build:
