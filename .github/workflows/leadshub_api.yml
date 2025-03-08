@@ -30,9 +30,7 @@ jobs:
           build-args: |
             ASPNETCORE_ENVIRONMENT=production
             ASPNETCORE_HTTP_PORTS=8080
-          tags: | 
-              jsglobaltech/leadshub_webapi:latest
-              jsglobaltech/leadshub_webapi:${{ github.sha }}
+          tags: jsglobaltech/leadshub_api:latest
 
   transfer:
     runs-on: ubuntu-latest

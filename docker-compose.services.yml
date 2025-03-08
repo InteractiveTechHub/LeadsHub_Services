@@ -4,7 +4,7 @@ networks:
 
 services:
   leadshub_api:
-    image: jsglobaltech/leadshub_webapi
+    image: jsglobaltech/leadshub_api
     container_name: leadshub_Api
     restart: always
     environment:
