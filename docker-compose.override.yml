@@ -1,4 +1,51 @@
 services:
+  rabbitmq:
+    image: rabbitmq:4.0.5-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      interactive_net:
+       ipv4_address: 172.19.0.3
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  interactivedb:
+    image: "postgres:latest"
+    container_name: interactivedb
+    restart: always
+    ports:
+    - "3000:5432"
+    volumes:
+    - interactive_data:/var/lib/postgresql/data
+    networks:
+      interactive_net:
+        ipv4_address: 172.19.0.4
+    environment:
+    - POSTGRES_PASSWORD=@Inter#123
+    - POSTGRES_USER=postgres
+    - POSTGRES_DB=InteractiveLeads
+
+  pgadmin4:
+    image: "dpage/pgadmin4"
+    container_name: pgadmin4
+    restart: always
+    networks:
+      interactive_net:
+        ipv4_address: 172.19.0.5
+    ports:
+      - 2000:80
+    environment:    
+      - PGADMIN_DEFAULT_EMAIL=jaksonjosesilva34@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=@Inter#123
+    volumes:
+      - pgadmin4:/var/lib/pgadmin
+
   leadshub_api:
     container_name: leadshub_Api
     restart: always
@@ -10,12 +57,14 @@ services:
         ipv4_address: 172.19.0.11
     expose:
      - "8080"
-    #ports:
-    #  - "5000:8080"
-    #  - "5001:8081"
+    ports:
+      - "5000:8080"
+      - "5001:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+     - rabbitmq
 
   whatsapp_api:
     container_name: whatsapp_api
@@ -33,3 +82,5 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+     - rabbitmq

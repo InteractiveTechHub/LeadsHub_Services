@@ -1,6 +1,15 @@
 networks:
   interactive_net:
-    external: true
+    name: interactive_net 
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+
+volumes:
+  interactive_data:
+  pgadmin4:
+  rabbitmq_data:
 
 services:
   leadshub_api:

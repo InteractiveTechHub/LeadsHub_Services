@@ -70,8 +70,8 @@ namespace LeadsHub.Data.Repository
         {
             SimpleResponse<Lead> response = new();
 
-            string insertLead = "INSERT INTO \"Lead\" (\"ContactId\", \"CompanyId\", \"ConsultantId\", \"Status\", \"Channel\") ";
-            string insertLead2 = $"{insertLead} VALUES (@ContactId, @companyid, @ConsultantId, @Status, @Channel) RETURNING \"Id\"";
+            string insertLead = "INSERT INTO \"Lead\" (\"ContactId\", \"CompanyId\", \"ConsultantId\", \"Status\", \"Channel\", \"IntegrationId\") ";
+            string insertLead2 = $"{insertLead} VALUES (@ContactId, @companyid, @ConsultantId, @Status, @Channel, @IntegrationId) RETURNING \"Id\"";
                   
             try
             {
