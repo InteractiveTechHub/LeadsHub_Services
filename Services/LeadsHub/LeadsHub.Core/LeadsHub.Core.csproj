@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\AdaptiveKitCore\AdaptiveKitCore.csproj" />
-    <ProjectReference Include="..\..\..\Shared\CrossCutting\CrossCutting.csproj" />
   </ItemGroup>
 
   <ItemGroup>

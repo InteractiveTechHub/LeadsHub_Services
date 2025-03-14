@@ -1,5 +1,4 @@
 ﻿
-using CrossCutting.Models;
 using LeadsHub.Core.Interfaces.IBac;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

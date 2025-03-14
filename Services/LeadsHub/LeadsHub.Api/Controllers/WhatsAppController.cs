@@ -1,4 +1,4 @@
-﻿using CrossCutting.Models;
+﻿
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Payloads;
 using Microsoft.AspNetCore.Authorization;

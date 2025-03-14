@@ -14,7 +14,6 @@ WORKDIR /src
 COPY ["Services/LeadsHub/LeadsHub.Api/LeadsHub.Api.csproj", "Services/LeadsHub/LeadsHub.Api/"]
 COPY ["Shared/AdaptiveKitCore/AdaptiveKitCore.csproj", "Shared/AdaptiveKitCore/"]
 COPY ["Services/LeadsHub/LeadsHub.Core/LeadsHub.Core.csproj", "Services/LeadsHub/LeadsHub.Core/"]
-COPY ["Shared/CrossCutting/CrossCutting.csproj", "Shared/CrossCutting/"]
 COPY ["Services/LeadsHub/LeadsHub.Data/LeadsHub.Data.csproj", "Services/LeadsHub/LeadsHub.Data/"]
 RUN dotnet restore "./Services/LeadsHub/LeadsHub.Api/LeadsHub.Api.csproj"
 COPY . .

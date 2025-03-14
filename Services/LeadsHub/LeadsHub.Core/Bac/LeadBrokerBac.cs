@@ -1,8 +1,5 @@
 ﻿
-using AdaptiveKitCore.Model;
 using AdaptiveKitCore.Responses;
-using AdaptiveKitCore.Responses.Interfaces;
-using CrossCutting.Models;
 using LeadsHub.Core.Hubs;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;

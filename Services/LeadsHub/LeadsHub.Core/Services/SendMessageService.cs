@@ -1,6 +1,5 @@
 ﻿
 using AdaptiveKitCore.Responses;
-using CrossCutting.Models;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Payloads.Whatsapp.Error;
 using LeadsHub.Core.Request;
