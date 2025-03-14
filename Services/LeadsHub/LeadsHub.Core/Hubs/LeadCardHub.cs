@@ -37,5 +37,27 @@ namespace LeadsHub.Core.Hubs
 
             await base.OnDisconnectedAsync(exception);
         }
+
+        public async Task JoinLeadChatGroup(string leadId)
+        {
+            string? userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? Context.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(leadId))
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"lead-{leadId}");
+            }
+        }
+
+        public async Task LeaveLeadChatGroup(string leadId)
+        {
+            string? userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? Context.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(leadId))
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"lead-{leadId}");
+            }
+        }
     }
 }

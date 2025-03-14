@@ -12,6 +12,7 @@ namespace LeadsHub.Data.Repository
     public sealed class LeadManagerRepository : ILeadManagerRepository
     {
         private const string selectLeadCard = "SELECT ld.\"Id\" As LeadId, "
+                                                    + "ld.\"Identifier\", "
                                                     + "ld.\"CompanyId\", "
                                                     + "ld.\"Channel\", "
                                                     + "ld.\"Status\", "
@@ -32,6 +33,7 @@ namespace LeadsHub.Data.Repository
                                                 + "LEFT JOIN \"LastMessage\" lm ON lm.\"LeadId\" = ld.\"Id\"";
 
         private string groupBy = "GROUP BY ld.\"Id\", "
+            + "ld.\"Identifier\", "
             + "ld.\"CompanyId\", "
             + "ld.\"Channel\", "
             + "ld.\"Status\", "

@@ -130,7 +130,7 @@ namespace LeadsHub.Data.Repository
                 {
                     LeadId = timeline.LeadId,
                     TimelineId = timeline.Id,
-                    LastMessage = timeline.Message.Body,
+                    LastMessage = timeline.Message!.Body,
                     LastMessageDate = timeline.MessageDate,
                     Status = timeline.Status
                 };

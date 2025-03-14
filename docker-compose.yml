@@ -9,7 +9,7 @@ networks:
 volumes:
   interactive_data:
   pgadmin4:
-  rabbitmq_data:
+  #rabbitmq_data:
 
 services:
   leadshub_api:
@@ -17,10 +17,3 @@ services:
     build:
       context: .
       dockerfile: Services/LeadsHub/LeadsHub.Api/Dockerfile
-
-  whatsapp_api:
-    image: ${DOCKER_REGISTRY-}whatsappapi
-    build:
-      context: .
-      dockerfile: Integrations/WhatsApp/WhatsApp.Api/Dockerfile
-

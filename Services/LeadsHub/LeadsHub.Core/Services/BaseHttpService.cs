@@ -3,6 +3,8 @@ using System.Net;
 using System.Text.Json;
 using System.Text;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Request;
+using LeadsHub.Core.Responses;
 
 namespace LeadsHub.Core.Services
 {
@@ -15,9 +17,9 @@ namespace LeadsHub.Core.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<BaseResponse> SendMessageAsync(string uri, string messageSerielized)
+        public async Task<JsonResponse> PostAsync(MessageRequest request)
         {
-            BaseResponse response = new();
+            JsonResponse response = new();
 
             try
             {
@@ -25,29 +27,53 @@ namespace LeadsHub.Core.Services
 
                 HttpRequestMessage message = new();
                 message.Headers.Add("Accept", "application/json");
-                //message.Headers.Add("Authorization", $"Bearer {TempToken}");
+
+                if (!string.IsNullOrWhiteSpace(request.AccessToken))
+                {
+                    message.Headers.Add("Authorization", $"Bearer {request.AccessToken}");
+                }
+
                 message.Method = HttpMethod.Post;
-
-                message.RequestUri = new Uri("http://whatsapp_api:8080/api/v1/whatsapp/sendmessage");
-
-                message.Content = new StringContent(messageSerielized, Encoding.UTF8, "application/json");
+                message.RequestUri = new Uri($"{request.Url}");
+                message.Content = new StringContent(request.DataJson, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage apiResponse = await client.SendAsync(message);
 
-                HttpStatusCode statusCode = apiResponse.StatusCode;
-                string apiContent = await apiResponse.Content.ReadAsStringAsync();
-
-                JsonSerializerOptions options = new()
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                response = JsonSerializer.Deserialize<BaseResponse>(apiContent, options) ?? new();
+                response = await GetDefaultResponse(apiResponse);
             }
             catch (Exception ex)
             {
                 response.AddExceptionMessage(ex.Message);
             }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get default response object
+        /// </summary>
+        /// <param name="apiResponse">Http response message</param>
+        /// <returns>default response</returns>
+        private static async Task<JsonResponse> GetDefaultResponse(HttpResponseMessage apiResponse)
+        {
+            JsonResponse response = new();
+
+            string serverError = apiResponse.StatusCode switch
+            {
+                HttpStatusCode.Forbidden => "Permission denied",
+                HttpStatusCode.InternalServerError => "Server Internal Error",
+                HttpStatusCode.ServiceUnavailable => "Service Unavailable",
+                _ => string.Empty,
+            };
+
+            if (!string.IsNullOrWhiteSpace(serverError))
+            {
+                response.AddErrorMessage(serverError);
+
+                return response;
+            }
+
+            response.DataJson = await apiResponse.Content.ReadAsStringAsync();   
 
             return response;
         }

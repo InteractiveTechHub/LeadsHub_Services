@@ -13,6 +13,11 @@ namespace LeadsHub.Core.Models
 
         public int Channel { get; set; }
 
+        /// <summary>
+        /// Postgres Default UUID 
+        /// </summary>
+        public Guid Identifier { get; set; }
+
         public long IntegrationId { get; set; }
 
         public int Status { get; set; } = 1; // This will be enumerator
@@ -20,5 +25,7 @@ namespace LeadsHub.Core.Models
         public Consultant? Consultant { get; set; }
 
         public Contact Contact { get; set; } = new();
+
+        public List<Timeline> Timelines { get; set; } = new();
     }
 }

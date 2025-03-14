@@ -71,5 +71,13 @@ namespace LeadsHub.Core.Models
 
             MessageFile = (messageFile);
         }
+
+        public void ConvertsTimeUnixToUtcDateTime(string timesStamp)
+        {
+            long timestampUnix = Convert.ToInt64(timesStamp);
+            DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestampUnix);
+
+            MessageDate = dateTimeOffset.UtcDateTime;
+        }
     }
 }

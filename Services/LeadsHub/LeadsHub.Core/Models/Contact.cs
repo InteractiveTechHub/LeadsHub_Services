@@ -1,7 +1,7 @@
 ﻿
 namespace LeadsHub.Core.Models
 {
-    public sealed class Contact
+    public sealed class Contact : BaseModel
     {
         public DateTime? BirthDate { get; set; }
 

@@ -6,6 +6,6 @@
 
         public static string MediaConfigConnection { get; set; } = string.Empty;
 
-        public static string WhatAppApiUrl { get; set; } = string.Empty;
+        public static string? WhatsAppAPIBase { get; set; } = string.Empty;
     }
 }

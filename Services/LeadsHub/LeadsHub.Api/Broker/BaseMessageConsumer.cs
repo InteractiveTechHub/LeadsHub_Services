@@ -2,7 +2,7 @@
 
 namespace LeadsHub.Api.Broker
 {
-    public class BaseMessageConsumer : BackgroundService
+    /*public class BaseMessageConsumer : BackgroundService
     {
         protected IConnection _connection = default!;
         protected IChannel _channel = default!;
@@ -37,5 +37,5 @@ namespace LeadsHub.Api.Broker
 
             base.Dispose();
         }
-    }
+    }*/
 }

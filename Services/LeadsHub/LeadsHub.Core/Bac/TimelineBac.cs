@@ -2,12 +2,15 @@
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
-using CrossCutting.Models;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
+using LeadsHub.Core.Payloads.Whatsapp.SendMessage;
+using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
+using LeadsHub.Core.Utility;
+using System.Text.Json;
 
 namespace LeadsHub.Core.Bac
 {
@@ -16,11 +19,14 @@ namespace LeadsHub.Core.Bac
         private readonly ILeadRepository _leadRepository;
         private readonly ISendMessageService _sendMessageService;
         private readonly ITimelineRepository _timelineRepository;
-        public TimelineBac(ILeadRepository leadRepository, ISendMessageService sendMessageService, ITimelineRepository timelineRepository)
+        private readonly IWhatsAppRepository _whatsAppRepository;
+
+        public TimelineBac(ILeadRepository leadRepository, ISendMessageService sendMessageService, ITimelineRepository timelineRepository, IWhatsAppRepository whatsAppRepository)
         {
             _leadRepository = leadRepository;
             _sendMessageService = sendMessageService;
             _timelineRepository = timelineRepository;
+            _whatsAppRepository = whatsAppRepository;
         }
 
         public async Task<TimelineResponse> FetchTimelineByRequestAsync(long leadId, FilterRequest filterRequest)
@@ -38,18 +44,42 @@ namespace LeadsHub.Core.Bac
         {
             SimpleResponse<Timeline> response = new();
 
+            SimpleResponse<Lead?> leadResponse = await _leadRepository.FetchLeadByIdAsync(timeline.LeadId);
+            if (leadResponse.HasAnyErrorMessage)
+            {
+                return response;
+            }
+
+            SendMessagePayLoad sendMessagePayLoad = new()
+            {
+                RecepientType = "individual",
+                To = leadResponse.Model!.Contact.PhoneNumber,
+            };
+
             // text
             if (timeline.Type == 1)
             {
-                response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+                sendMessagePayLoad.Type = "text";
+                sendMessagePayLoad.Text = new()
+                {
+                    PreviewUrl = false,
+                    Body = timeline.Message!.Body
+                };
 
-                await SendTextMessageAsync(timeline);
+                response = await _timelineRepository.RegisterMessageTextAsync(timeline);              
             }
 
             // template
             if (timeline.Type == 2)
             {
-
+                sendMessagePayLoad.Template = new()
+                {
+                    Name = "",
+                    Language = new()
+                    {
+                        Code = "pt_BR",
+                    }
+                };
             }
 
             // file
@@ -64,6 +94,8 @@ namespace LeadsHub.Core.Bac
 
             }
 
+            await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);
+
             return response;
         }
 
@@ -72,25 +104,29 @@ namespace LeadsHub.Core.Bac
         /// </summary>
         /// <param name="timeline">Message to send</param>
         /// <returns></returns>
-        private async Task SendTextMessageAsync(Timeline timeline)
-        {
-            SimpleResponse<Lead?> response = await _leadRepository.FetchLeadByIdAsync(timeline.LeadId);
-            if (response.HasAnyErrorMessage || response.Model is null)
+        private async Task SendTextMessageAsync(SendMessagePayLoad sendMessagePayLoad, long integrationId)
+        {           
+            // Buscar lead para pegar integração.
+
+            FilterRequest filter = new();
+            filter.AddFilter(nameof(Integration.Id), FilterOperatorEnum.Equals, integrationId, "i");
+
+            var response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filter);
+            if (response.HasAnyErrorMessage)
             {
-                return;
+                //should return with some error.
+                //return new();
             }
 
-            Lead lead = response.Model;
+            MessageRequest request = new();
 
-            TransferLead transfer = new();
-            transfer.IntegrationId = lead.IntegrationId;
-            transfer.CompanyId = lead.CompanyId;
-            transfer.PhoneNumber = lead.Contact.PhoneNumber;
-            transfer.MessageType = timeline.Type;
-            transfer.MessageDate = timeline.MessageDate;
-            transfer.MessageBody = timeline.Message!.Body;
+            request.AccessToken = response.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).First();
+            string phoneNumberId = response.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).First();
 
-            var sendResponse = await _sendMessageService.SendMessageToWhatsApp(transfer);
+            request.Url = SD.WhatsAppAPIBase + $"/{phoneNumberId}/messages";
+            request.DataJson = JsonSerializer.Serialize(sendMessagePayLoad);
+
+            var sendResponse = await _sendMessageService.SendMessageToWhatsApp(request);
         }
     }
 }

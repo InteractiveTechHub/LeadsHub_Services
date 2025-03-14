@@ -1,5 +1,7 @@
 ﻿
+using AdaptiveKitCore.Model;
 using AdaptiveKitCore.Responses;
+using AdaptiveKitCore.Responses.Interfaces;
 using CrossCutting.Models;
 using LeadsHub.Core.Hubs;
 using LeadsHub.Core.Interfaces.IBac;
@@ -33,74 +35,61 @@ namespace LeadsHub.Core.Bac
             _timelineRepository = timelineRepository;
         }
 
-        public async Task ReceiveLeadsAsync(TransferLead transferLead)
+        public async Task ReceiveLeadsAsync(Lead lead)
         {
-            Contact contact = new()
-            {
-                Name = transferLead.Name,
-                PhoneNumber = transferLead.PhoneNumber,
-                Email = transferLead.Email,
-                //CPF = leadMessage.CPF,
-                //BirthDate = leadMessage.BirthDate,
-            };
-
-            SimpleResponse<Lead?> response = await _leadBrokerRepository.FetchLeadByContactAsync(contact);
+            SimpleResponse<Lead?> response = await _leadBrokerRepository.FetchLeadByContactAsync(lead.Contact);
 
             // if contact is not found, register a new lead
             if (response.Model is null)
             {
-                response = await CreatesNewLeadAsync(transferLead, contact);
+                await CreatesNewLeadAsync(lead);
 
-                await NotifyNewLeadToManagerAsync(response.Model!);
-            }            
+                return;
+            }
 
-            await RegisterLeadMessageAsync(transferLead, response.Model!);
+            response.Model.Timelines = [..lead.Timelines];
+            lead = response.Model;
 
-            //await NotifyLeadManagerAsync(response.Model, isNewLead);
+            await RegisterLeadMessageAsync(lead);
         }
 
-        private async Task<SimpleResponse<Lead?>> CreatesNewLeadAsync(TransferLead transferLead, Contact contact)
+        private async Task<SimpleResponse<Lead>> CreatesNewLeadAsync(Lead lead)
         {
-            long contactId = await VerifyContactAsync(contact);
+            long contactId = await VerifyContactAsync(lead.Contact);
 
-            Consultant? consultant = await _distributionService.DistributeLeadsAsync(transferLead.CompanyId);
+            Consultant? consultant = await _distributionService.DistributeLeadsAsync(lead.CompanyId);
 
-            Lead lead = new()
-            {
-                CompanyId = transferLead.CompanyId,
-                ConsultantId = consultant?.Id,
-                ContactId = contactId,
-                Status = 1, // (Awaiting answer)
-                IntegrationId = transferLead.IntegrationId,
-            };
+            lead.Contact.Id = contactId;
+            lead.ContactId = contactId;
+            lead.ConsultantId = consultant.Id;
+            lead.Consultant = consultant;
 
             SimpleResponse<Lead> leadResponse = await _leadBrokerRepository.RegisterLeadAsync(lead);
-            if (leadResponse.HasErrorMessage)
+            if (leadResponse.HasAnyErrorMessage)
             {
                 // TODO: must implement a log here
                 return leadResponse;
             }
 
             lead.Id = leadResponse.Model!.Id;
+            lead.Identifier = leadResponse.Model.Identifier;
 
             if (consultant is not null)
             {                
                 consultant.TimeLastLeadAssigned = DateTimeOffset.UtcNow;
                 await _leadBrokerRepository.UpdateConsultantsAsync(consultant);
+            }            
 
-                lead.Consultant = consultant;
-            }
+            await RegisterLeadMessageAsync(lead);
+
+            await NotifyNewLeadToManagerAsync(lead);
 
             return leadResponse;
         }
 
         private async Task NotifyNewMessage(Lead lead)
         {
-            if (lead.Consultant is not null && !string.IsNullOrEmpty(lead.Consultant!.IdentityId))
-            {
-                // should updage messages without pulling, sending object.
-                await _hubContext.Clients.User(lead.Consultant.IdentityId).SendAsync("newMessage");
-            }
+            await _hubContext.Clients.Group($"lead-{lead.Identifier.ToString()}").SendAsync("newMessage");
         }
 
         private async Task NotifyNewLeadToManagerAsync(Lead lead)
@@ -117,57 +106,35 @@ namespace LeadsHub.Core.Bac
         /// </summary>
         /// <param name="message">Lead Message</param>
         /// <param name="lead"></param>
-        private async Task RegisterLeadMessageAsync(TransferLead transferLead, Lead lead)
+        private async Task RegisterLeadMessageAsync(Lead lead)
         {
-            Timeline timeline = new();
-
-            timeline.LeadId = lead.Id;
-            timeline.ConsultantId = lead.Consultant?.Id;
-            timeline.Sender = 1;
-            timeline.MessageId = transferLead.MessageId;
-            timeline.MessageDate = transferLead.MessageDate;
-            timeline.Type = 1; // Text
-            timeline.Status = 1; // Pending
-            timeline.UpdatedAt = DateTimeOffset.UtcNow;
-
-            if (transferLead.MessageType.Equals(1))
+            foreach (Timeline timeline in lead.Timelines)
             {
-                MessageText message = new();
-                message.Body = transferLead.MessageBody;
+                timeline.LeadId = lead.Id;
+                timeline.UpdatedAt = DateTimeOffset.UtcNow;
 
-                timeline.Message = message;
+                if (timeline.Type.Equals(1))
+                {
+                    var response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+                }
 
-                //TODO: Update Message when it is edited;
-                //TODO: Delete Message when it is deleted or mark as deleted;
+                if (timeline.Type.Equals(2))
+                {
+                    // Update or register reaction
+                    //TODO: Try to find reaction (insert or update), Fetch the message to get the message body
+                    // Update frontend timeline with the reaction.
+                }
 
-                var response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+                if (timeline.Type.Equals(3))
+                {
+                    // TODO: Mark as deleted when the message is deleted;
+
+                    // Register image
+                    var response = await _timelineRepository.RegisterMessageFileAsync(timeline);
+                }                
             }
 
-            if (transferLead.MessageType.Equals("reaction"))
-            {
-                MessageReaction reaction = new();
-                reaction.Emoji = transferLead.ReactionEmoji;
-                reaction.MessageId = transferLead.MessageId;
-
-                // Update or register reaction
-                //TODO: Try to find reaction (insert or update), Fetch the message to get the message body
-                // Update frontend timeline with the reaction.
-            }
-
-            if (transferLead.MessageType.Equals("image"))
-            {
-                MessageFile message = new();
-                message.Caption = transferLead.Caption;
-                message.Url = transferLead.Url;
-                message.MimeType = transferLead.MimeType;
-
-                // TODO: Mark as deleted when the message is deleted;
-
-                // Register image
-                var response = await _timelineRepository.RegisterMessageFileAsync(timeline);
-            }
-
-            // Send notification via SignalR
+            await NotifyNewMessage(lead);
         }
 
         private async Task<long> VerifyContactAsync(Contact contact)

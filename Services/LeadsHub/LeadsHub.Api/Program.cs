@@ -19,19 +19,20 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Data;
 using System.Text;
+using WhatsApp.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 string connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
 SD.ConnectString = connectionString;
-SD.WhatAppApiUrl = configuration.GetValue<string>("ApiUrl:WhatsAppApi") ?? string.Empty;
+SD.WhatsAppAPIBase = configuration["WhatsappUrls:SendReceiveMessage"];
 
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost:4200", "http://localhost", "http://http://93.127.215.157", "http://jsdesenvolvimento.shop/")
+        builder.WithOrigins("http://localhost:4200", "http://localhost", "http://http://93.127.215.157", "http://tecnoprohub.com/", "https://tecnoprohub.com/")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
@@ -110,7 +111,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // RabbitMQ Broker
-builder.Services.AddHostedService<MessageConsumer>();
+//builder.Services.AddHostedService<MessageConsumer>();
 
 // Services
 builder.Services.AddScoped<JwtService>();
@@ -124,6 +125,7 @@ builder.Services.AddScoped<IConsultantBac, ConsultantBac>();
 builder.Services.AddSingleton<ILeadBrokerBac, LeadBrokerBac>();
 builder.Services.AddScoped<ILeadManagerBac, LeadManagerBac>();
 builder.Services.AddSingleton<ITimelineBac, TimelineBac>();
+builder.Services.AddSingleton<IWhatsAppBac, WhatsAppBac>();
 
 // Repository
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
@@ -133,6 +135,7 @@ builder.Services.AddSingleton<ILeadRepository, LeadRepository>();
 builder.Services.AddSingleton<ILeadBrokerRepository, LeadBrokerRepository>();
 builder.Services.AddScoped<ILeadManagerRepository, LeadManagerRepository>();
 builder.Services.AddSingleton<ITimelineRepository, TimelineRepository>();
+builder.Services.AddSingleton<IWhatsAppRepository, WhatsAppRepository>();
 
 var app = builder.Build();
 

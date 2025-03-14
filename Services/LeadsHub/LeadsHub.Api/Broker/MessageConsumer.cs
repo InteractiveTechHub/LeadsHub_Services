@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace LeadsHub.Api.Broker
 {
-    public class MessageConsumer : BaseMessageConsumer
+   /* public class MessageConsumer : BaseMessageConsumer
     {
         private readonly ILeadBrokerBac _leadBrokerBac;
 
@@ -49,5 +49,5 @@ namespace LeadsHub.Api.Broker
                 throw new Exception($"Error on MessageConsumer.ExecuteAsync: {ex.Message}");
             }
         }
-    }
+    }*/
 }

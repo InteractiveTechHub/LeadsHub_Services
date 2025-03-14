@@ -5,9 +5,6 @@ using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Utility;
 using Npgsql;
-using System.ComponentModel.Design;
-using System.Reflection.Emit;
-using System.Threading.Channels;
 
 namespace LeadsHub.Data.Repository
 {
@@ -29,6 +26,7 @@ namespace LeadsHub.Data.Repository
                                         + "LIMIT 1;";
 
         string selectLeadByContact = "SELECT ld.\"Id\", " +
+                       "ld.\"Identifier\", " +
                        "ld.\"CompanyId\", " +
                        "ld.\"ConsultantId\", " +
                        "ld.\"ContactId\", " +
@@ -71,7 +69,7 @@ namespace LeadsHub.Data.Repository
             SimpleResponse<Lead> response = new();
 
             string insertLead = "INSERT INTO \"Lead\" (\"ContactId\", \"CompanyId\", \"ConsultantId\", \"Status\", \"Channel\", \"IntegrationId\") ";
-            string insertLead2 = $"{insertLead} VALUES (@ContactId, @companyid, @ConsultantId, @Status, @Channel, @IntegrationId) RETURNING \"Id\"";
+            string insertLead2 = $"{insertLead} VALUES (@ContactId, @companyid, @ConsultantId, @Status, @Channel, @IntegrationId) RETURNING \"Id\", \"Identifier\";";
                   
             try
             {
@@ -80,9 +78,10 @@ namespace LeadsHub.Data.Repository
 
                 using var transaction = await connection.BeginTransactionAsync();
 
-                long leadid = await connection.ExecuteScalarAsync<long>(insertLead2, lead, transaction);
+                var result = await connection.QueryFirstAsync<dynamic>(insertLead2, lead, transaction);
 
-                lead.Id = leadid;
+                lead.Id = result?.Id;
+                lead.Identifier = result?.Identifier ?? string.Empty;
                 response.Model = lead;
 
                 await transaction.CommitAsync();

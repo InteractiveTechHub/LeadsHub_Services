@@ -12,6 +12,7 @@ namespace LeadsHub.Data.Repository
     public sealed class LeadRepository : ILeadRepository
     {
         string query = "SELECT ld.\"Id\", "
+            + "ld.\"Identifier\" "
             + "ld.\"CompanyId\", "
             + "ld.\"ConsultantId\", "
             + "ld.\"ContactId\", "
@@ -26,6 +27,7 @@ namespace LeadsHub.Data.Repository
             + "c.\"Email\" "
             + "FROM public.\"Lead\" ld "
             + "INNER JOIN \"Contact\" c ON ld.\"ContactId\" = c.\"Id\" WHERE ld.\"Id\" = @LeadId";
+
         public async Task<SimpleResponse<Lead?>> FetchLeadByIdAsync(long leadId)
         {
             SimpleResponse<Lead?> response = new();

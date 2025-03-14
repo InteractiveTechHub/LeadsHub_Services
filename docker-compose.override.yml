@@ -1,19 +1,19 @@
 services:
-  rabbitmq:
-    image: rabbitmq:4.0.5-management
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      interactive_net:
-       ipv4_address: 172.19.0.3
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+  # rabbitmq:
+  #   image: rabbitmq:4.0.5-management
+  #   container_name: rabbitmq
+  #   restart: always
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   networks:
+  #     interactive_net:
+  #      ipv4_address: 172.19.0.3
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=guest
+  #     - RABBITMQ_DEFAULT_PASS=guest
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
 
   interactivedb:
     image: "postgres:latest"
@@ -63,24 +63,3 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-    depends_on:
-     - rabbitmq
-
-  whatsapp_api:
-    container_name: whatsapp_api
-    restart: always
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-     ## - ASPNETCORE_HTTPS_PORTS=8081
-    networks:
-      interactive_net:
-        ipv4_address: 172.19.0.12
-    ports:
-      - "7000:8080"
-      - "7001:8081"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-    depends_on:
-     - rabbitmq

@@ -1,11 +1,11 @@
 ﻿
 using AdaptiveKitCore.Responses;
-using CrossCutting.Models;
+using LeadsHub.Core.Request;
 
 namespace LeadsHub.Core.Interfaces.IServices
 {
     public interface ISendMessageService
     {
-        Task<BaseResponse> SendMessageToWhatsApp(TransferLead transferLead);
+        Task<BaseResponse> SendMessageToWhatsApp(MessageRequest request);
     }
 }
