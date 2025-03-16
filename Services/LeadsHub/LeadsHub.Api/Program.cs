@@ -36,7 +36,9 @@ builder.Services.AddCors(options =>
                             "http://localhost", 
                             "http://93.127.215.157", 
                             "http://tecnoprohub.com/", 
-                            "https://tecnoprohub.com/")
+                            "https://tecnoprohub.com/",
+                            "http://www.tecnoprohub.com",
+                            "https://www.tecnoprohub.com")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
