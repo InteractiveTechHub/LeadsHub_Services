@@ -65,4 +65,4 @@ jobs:
             cd /opt/leadshub
             sudo docker-compose -f docker-compose.api.yml config
             sudo docker-compose -f docker-compose.api.yml pull
-            sudo docker-compose up -f docker-compose.api.yml -d
+            sudo docker-compose up -f docker-compose.api.yml up -d
