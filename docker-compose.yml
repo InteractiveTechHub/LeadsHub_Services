@@ -1,10 +1,11 @@
 networks:
   interactive_net:
-    name: interactive_net 
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
+    external: true
+    # name: interactive_net 
+    # driver: bridge
+    # ipam:
+    #   config:
+    #     - subnet: 172.19.0.0/16
 
 volumes:
   interactive_data:
