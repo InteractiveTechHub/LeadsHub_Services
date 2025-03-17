@@ -32,7 +32,7 @@ SD.WhatsAppAPIBase = configuration["WhatsappUrls:SendReceiveMessage"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://tecnoprohub.com")
+        builder.WithOrigins("http://tecnoprohub.com", "http://www.tecnoprohub.com")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
