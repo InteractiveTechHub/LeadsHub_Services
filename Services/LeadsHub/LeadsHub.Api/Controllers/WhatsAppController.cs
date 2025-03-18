@@ -1,8 +1,11 @@
 ﻿
+using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Payloads;
+using LeadsHub.Core.Payloads.Whatsapp.Error;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace LeadsHub.Api.Controllers
 {
@@ -43,6 +46,13 @@ namespace LeadsHub.Api.Controllers
         [HttpPost("webhook")]
         public async Task<IActionResult> WebhookAsync(WhatsAppPayLoad whatsappPayLoad)
         {
+            JsonSerializerOptions options = new()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            string payload = JsonSerializer.Serialize(whatsappPayLoad, options);
+
             await _whatsappBac.ReceiveMessageFromWhatsappAsync(whatsappPayLoad);
 
             return Ok();

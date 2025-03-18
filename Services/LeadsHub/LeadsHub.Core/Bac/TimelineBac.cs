@@ -101,7 +101,11 @@ namespace LeadsHub.Core.Bac
 
             }
 
-            await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);
+            var result = await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);
+            if (result.HasAnyErrorMessage)
+            {
+                response.Messages.AddRange(result.Messages);
+            }
 
             return response;
         }

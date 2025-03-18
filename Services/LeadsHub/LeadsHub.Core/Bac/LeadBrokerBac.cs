@@ -79,8 +79,6 @@ namespace LeadsHub.Core.Bac
 
             await RegisterLeadMessageAsync(lead);
 
-            await NotifyNewLeadToManagerAsync(lead);
-
             return leadResponse;
         }
 
@@ -107,7 +105,7 @@ namespace LeadsHub.Core.Bac
         {
             foreach (Timeline timeline in lead.Timelines)
             {
-                timeline.LeadId = lead.Id;
+                timeline.LeadId = lead.Id;                
                 timeline.UpdatedAt = DateTimeOffset.UtcNow;
 
                 if (timeline.Type.Equals(1))
@@ -132,6 +130,7 @@ namespace LeadsHub.Core.Bac
             }
 
             await NotifyNewMessage(lead);
+            await NotifyNewLeadToManagerAsync(lead);
         }
 
         private async Task<long> VerifyContactAsync(Contact contact)

@@ -34,7 +34,8 @@ namespace LeadsHub.Data.Repository
                        "ld.\"AdCode\", " +
                        "ld.\"Channel\", " +
                        "ld.\"Status\", " +
-                       "ct.\"Id\" "
+                       "ct.\"Id\", " +
+                       "ct.\"IdentityId\" "
                + "FROM \"Lead\" ld "
                + "INNER JOIN \"Contact\" c ON ld.\"ContactId\" = c.\"Id\" "
                + "LEFT JOIN \"Consultant\" ct ON ct.\"Id\" = ld.\"ConsultantId\" "

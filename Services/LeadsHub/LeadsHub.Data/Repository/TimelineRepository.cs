@@ -184,8 +184,8 @@ namespace LeadsHub.Data.Repository
 
         private async Task<Timeline> RegisterTimelineAsync(Timeline timeline, NpgsqlTransaction transaction)
         {
-            string insertTimeline = "INSERT INTO \"Timeline\" (\"LeadId\", \"ConsultantId\", \"Sender\", \"Type\", \"Status\", \"MessageDate\", \"ReadAt\", \"MessageTextId\", \"MessageFileId\") " +
-                "VALUES (@LeadId, @ConsultantId, @Sender, @Type, @Status, @MessageDate, @ReadAt, @MessageTextId, @MessageFileId) RETURNING \"Id\"";
+            string insertTimeline = "INSERT INTO \"Timeline\" (\"LeadId\", \"ConsultantId\", \"Sender\", \"Type\", \"Status\", \"MessageId\", \"MessageDate\", \"ReadAt\", \"MessageTextId\", \"MessageFileId\") " +
+                "VALUES (@LeadId, @ConsultantId, @Sender, @Type, @Status, @MessageId, @MessageDate, @ReadAt, @MessageTextId, @MessageFileId) RETURNING \"Id\"";
 
             try
             {
