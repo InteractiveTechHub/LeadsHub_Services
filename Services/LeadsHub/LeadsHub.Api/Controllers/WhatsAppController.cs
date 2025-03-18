@@ -29,7 +29,7 @@ namespace LeadsHub.Api.Controllers
 
             int challengeConverted = Convert.ToInt32(challenge);
 
-            /*if (verifyToken.Equals("whatsapp"))
+            /*if (verifyToken.Equals("tech_hub_leads"))
             {
                 int challengeConverted = Convert.ToInt32(challenge);
 

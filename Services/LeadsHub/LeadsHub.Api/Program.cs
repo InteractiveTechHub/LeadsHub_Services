@@ -1,6 +1,5 @@
 using DbUp;
 using InteractiveLeads.Core.Enums;
-using LeadsHub.Api.Broker;
 using LeadsHub.Api.Services;
 using LeadsHub.Core.Bac;
 using LeadsHub.Core.Hubs;
@@ -32,7 +31,7 @@ SD.WhatsAppAPIBase = configuration["WhatsappUrls:SendReceiveMessage"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://tecnoprohub.com", "http://www.tecnoprohub.com")
+        builder.WithOrigins("http://localhost", "http://localhost:4200", "http://tecnoprohub.com", "http://www.tecnoprohub.com")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());

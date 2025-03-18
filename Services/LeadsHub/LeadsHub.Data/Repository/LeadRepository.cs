@@ -12,7 +12,7 @@ namespace LeadsHub.Data.Repository
     public sealed class LeadRepository : ILeadRepository
     {
         string query = "SELECT ld.\"Id\", "
-            + "ld.\"Identifier\" "
+            + "ld.\"Identifier\", "
             + "ld.\"CompanyId\", "
             + "ld.\"ConsultantId\", "
             + "ld.\"ContactId\", "

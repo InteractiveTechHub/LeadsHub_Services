@@ -47,6 +47,13 @@ namespace LeadsHub.Core.Bac
             SimpleResponse<Lead?> leadResponse = await _leadRepository.FetchLeadByIdAsync(timeline.LeadId);
             if (leadResponse.HasAnyErrorMessage)
             {
+                response.Messages.AddRange(leadResponse.Messages);
+                return response;
+            }
+
+            if (leadResponse.Model is null || leadResponse.Model.Id == 0)
+            {
+                response.AddErrorMessage("Lead not found");
                 return response;
             }
 
@@ -104,29 +111,33 @@ namespace LeadsHub.Core.Bac
         /// </summary>
         /// <param name="timeline">Message to send</param>
         /// <returns></returns>
-        private async Task SendTextMessageAsync(SendMessagePayLoad sendMessagePayLoad, long integrationId)
-        {           
-            // Buscar lead para pegar integração.
+        private async Task<BaseResponse> SendTextMessageAsync(SendMessagePayLoad sendMessagePayLoad, long integrationId)
+        {
+            BaseResponse response = new();
 
             FilterRequest filter = new();
             filter.AddFilter(nameof(Integration.Id), FilterOperatorEnum.Equals, integrationId, "i");
 
-            var response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filter);
+            var configRespose = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filter);
             if (response.HasAnyErrorMessage)
             {
                 //should return with some error.
-                //return new();
+                response.Messages.AddRange(configRespose.Messages);
+                
+                return response;
             }
 
             MessageRequest request = new();
 
-            request.AccessToken = response.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).First();
-            string phoneNumberId = response.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).First();
+            request.AccessToken = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).First();
+            string phoneNumberId = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).First();
 
             request.Url = SD.WhatsAppAPIBase + $"/{phoneNumberId}/messages";
             request.DataJson = JsonSerializer.Serialize(sendMessagePayLoad);
 
-            var sendResponse = await _sendMessageService.SendMessageToWhatsApp(request);
+            response = await _sendMessageService.SendMessageToWhatsApp(request);
+
+            return response;
         }
     }
 }
