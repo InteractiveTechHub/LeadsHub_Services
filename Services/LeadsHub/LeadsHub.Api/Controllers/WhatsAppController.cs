@@ -1,8 +1,5 @@
-﻿
-using AdaptiveKitCore.Responses;
-using LeadsHub.Core.Interfaces.IBac;
+﻿using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Payloads;
-using LeadsHub.Core.Payloads.Whatsapp.Error;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;

@@ -1,6 +1,5 @@
 ﻿using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
-using LeadsHub.Core.Identity.Models;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
@@ -11,10 +10,12 @@ namespace LeadsHub.Api.Controllers
 {
     public class TimelineController : BaseController
     {
+        private readonly IConsultantBac _consultantBac;
         private readonly ITimelineBac _timelineBac;
 
-        public TimelineController(ITimelineBac timelineBac)
+        public TimelineController(IConsultantBac consultantBac, ITimelineBac timelineBac)
         {
+            _consultantBac = consultantBac;
             _timelineBac = timelineBac;
         }
 
@@ -34,14 +35,20 @@ namespace LeadsHub.Api.Controllers
         public async Task<IActionResult> RegisterMessagesAsync([FromBody] Timeline timeline)
         {
             timeline.MessageDate = timeline.MessageDate.ToUniversalTime();
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return BadRequest("NotPermitionSendMessage");
             }
 
-            timeline.ConsultantId = 1; //TODO: FetchConsultantByUserId(userId);
+            var response = await _consultantBac.FetchConsultantByUserIdAsync(userId);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
+
+            timeline.ConsultantId = response.Model.Id;
 
             SimpleResponse <Timeline> respose = await _timelineBac.RegisterTimelineAsync(timeline);
             if (respose.HasAnyErrorMessage)

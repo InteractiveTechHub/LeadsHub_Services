@@ -11,6 +11,8 @@ namespace LeadsHub.Core.Interfaces.IBac
 
         Task<ConsultantResponse> FetchConsultantsByRequestAsync(FilterRequest filterRequest);
 
+        Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId);
+
         Task<ModelResponse> UpdateConsultantAsync(Consultant consultant);
     }
 }

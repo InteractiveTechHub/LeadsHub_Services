@@ -158,6 +158,26 @@ namespace LeadsHub.Data.Repository
             return response;
         }
 
+        public async Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId)
+        {
+            SimpleResponse<Consultant> response = new();
+
+            try
+            {
+                string querySql = $"SELECT * FROM \"Consultant\" WHERE \"IdentityId\" = '{userId}'";
+
+                Consultant? consultant = await _dbConnection.QueryFirstAsync<Consultant>(querySql);
+
+                response.Model = consultant;
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage($"{ex.Message}");
+            }
+
+            return response;
+        }
+
         public async Task<ModelResponse> UpdateConsultantAsync(Consultant consultant)
         {
             ModelResponse response = new();

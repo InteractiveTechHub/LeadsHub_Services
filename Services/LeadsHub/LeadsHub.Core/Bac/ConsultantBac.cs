@@ -23,6 +23,13 @@ namespace LeadsHub.Core.Bac
             return await _consultantRepository.CreatesConsultantAsync(consultant);
         }
 
+        public async Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId)
+        {
+            var response = await _consultantRepository.FetchConsultantByUserIdAsync(userId);
+
+            return response;
+        }
+
         public async Task<ConsultantResponse> FetchConsultantsByRequestAsync(FilterRequest filterRequest)
         {
             return await _consultantRepository.FetchConsultantsByRequestAsync(filterRequest);

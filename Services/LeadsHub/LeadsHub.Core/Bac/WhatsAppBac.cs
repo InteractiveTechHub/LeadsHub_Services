@@ -22,8 +22,6 @@ namespace LeadsHub.Core.Bac
 
         public async Task ReceiveMessageFromWhatsappAsync(WhatsAppPayLoad whatsappMessage)
         {
-
-
             foreach (var entry in whatsappMessage.Entry)
             {
                 foreach (PayLoadChange change in entry.Changes)
