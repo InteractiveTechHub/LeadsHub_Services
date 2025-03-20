@@ -1,6 +1,7 @@
 ﻿
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
+using LeadsHub.Core.Enum;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
@@ -60,14 +61,13 @@ namespace LeadsHub.Core.Bac
 
                 lead.Contact.PhoneNumber = message.From;
                 timeline.MessageId = message.Id;
-                timeline.Sender = 1; //lead
-                timeline.Status = 1; //Pending
+                timeline.Status = MessageStatus.Delivered;
 
                 timeline.ConvertsTimeUnixToUtcDateTime(message.TimeStamp);
 
                 if (message.Type.Equals("text"))
                 {
-                    timeline.Type = 1;
+                    timeline.Type = MessageType.Text;
                     timeline.Message = new()
                     {
                         Body = message.Text.Body
@@ -77,14 +77,14 @@ namespace LeadsHub.Core.Bac
                 //TODO: Implement others feature later.
                 if (message.Type.Equals("reaction"))
                 {
-                    timeline.Type = 2;
+                    timeline.Type = MessageType.Reaction;
                     timeline.MessageReaction!.Emoji = message.Reaction.Emoji;
                     timeline.MessageReaction!.MessageId = message.Reaction.MessageId;
                 }
 
                 if (message.Type.Equals("image"))
                 {
-                    timeline.Type = 3;
+                    timeline.Type = MessageType.Image;
                     timeline.MessageFile!.MimeType = message.Image.MimeType;
                     timeline.MessageFile.Caption = message.Image.Caption;
                     string whatsImageId = message.Image.Sha256; //Or message.Image.Id; 

@@ -132,6 +132,7 @@ namespace LeadsHub.Data.Repository
                     TimelineId = timeline.Id,
                     LastMessage = timeline.Message!.Body,
                     LastMessageDate = timeline.MessageDate,
+                    Sender = timeline.Sender,
                     Status = timeline.Status
                 };
 

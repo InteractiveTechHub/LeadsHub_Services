@@ -102,7 +102,11 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(60);
+});
 
 // Swagger and open api
 builder.Services.AddOpenApi();

@@ -2,6 +2,7 @@
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Enum;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
@@ -40,9 +41,17 @@ namespace LeadsHub.Core.Bac
             return response;
         }
 
+        /// <summary>
+        /// Register timiline, messages, files and etc..
+        /// </summary>
+        /// <param name="timeline">Timeline containing it's childrens</param>
+        /// <returns>Response of operation</returns>
         public async Task<SimpleResponse<Timeline>> RegisterTimelineAsync(Timeline timeline)
         {
             SimpleResponse<Timeline> response = new();
+
+            timeline.Sender = MessageSender.consultant;
+            timeline.Status = MessageStatus.Sent;
 
             SimpleResponse<Lead?> leadResponse = await _leadRepository.FetchLeadByIdAsync(timeline.LeadId);
             if (leadResponse.HasAnyErrorMessage)
@@ -57,6 +66,9 @@ namespace LeadsHub.Core.Bac
                 return response;
             }
 
+            // TODO: The only person who can send a message to the lead is the one assigned to it
+            // TODO: If lead does not have a consultant, it should not be possible to send a message
+
             SendMessagePayLoad sendMessagePayLoad = new()
             {
                 RecepientType = "individual",
@@ -64,7 +76,7 @@ namespace LeadsHub.Core.Bac
             };
 
             // text
-            if (timeline.Type == 1)
+            if (timeline.Type == MessageType.Text)
             {
                 sendMessagePayLoad.Type = "text";
                 sendMessagePayLoad.Text = new()
@@ -77,7 +89,7 @@ namespace LeadsHub.Core.Bac
             }
 
             // template
-            if (timeline.Type == 2)
+            if (timeline.Type == MessageType.Template)
             {
                 sendMessagePayLoad.Template = new()
                 {
@@ -89,22 +101,14 @@ namespace LeadsHub.Core.Bac
                 };
             }
 
-            // file
-            if (timeline.Type == 3)
-            {
-
-            }
-
-            // reaction
-            if (timeline.Type == 4)
-            {
-
-            }
-
             var result = await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);
             if (result.HasAnyErrorMessage)
             {
                 response.Messages.AddRange(result.Messages);
+
+                timeline.Status = MessageStatus.Failed;
+               
+                // TODO: Update Timeline
             }
 
             return response;

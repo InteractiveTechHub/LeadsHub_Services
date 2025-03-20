@@ -1,4 +1,6 @@
 ﻿
+using LeadsHub.Core.Enum;
+
 namespace LeadsHub.Core.Models
 {
     public class Timeline : BaseModel
@@ -44,17 +46,17 @@ namespace LeadsHub.Core.Models
         /// <summary>
         /// Who sent the message (Lead or Consultant)
         /// </summary>
-        public int Sender { get; set; }
+        public MessageSender Sender { get; set; }
 
         /// <summary>
         /// The status of the message (Ex.: Pedding, Sent, Read, etc)
         /// </summary>
-        public int Status { get; set; } = 1;
+        public MessageStatus Status { get; set; }
 
         /// <summary>
         /// The message type (Ex.: Text, Image, Video, template, etc)
         /// </summary>
-        public int Type { get; set; }
+        public MessageType Type { get; set; }
 
         public MessageText? Message { get; set; }
 

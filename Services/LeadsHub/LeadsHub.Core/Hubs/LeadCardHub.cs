@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.JsonWebTokens;
-using System.Collections.Concurrent;
 using System.Security.Claims;
 
 namespace LeadsHub.Core.Hubs

@@ -1,9 +1,11 @@
 ﻿using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Identity.Models;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LeadsHub.Api.Controllers
 {
@@ -32,13 +34,20 @@ namespace LeadsHub.Api.Controllers
         public async Task<IActionResult> RegisterMessagesAsync([FromBody] Timeline timeline)
         {
             timeline.MessageDate = timeline.MessageDate.ToUniversalTime();
-            SimpleResponse<Timeline> respose = await _timelineBac.RegisterTimelineAsync(timeline);
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("NotPermitionSendMessage");
+            }
+
+            timeline.ConsultantId = 1; //TODO: FetchConsultantByUserId(userId);
+
+            SimpleResponse <Timeline> respose = await _timelineBac.RegisterTimelineAsync(timeline);
             if (respose.HasAnyErrorMessage)
             {
                 return BadRequest(respose);
             }
-
-            // Send message to whatsapp
 
             return Ok(respose);
         }

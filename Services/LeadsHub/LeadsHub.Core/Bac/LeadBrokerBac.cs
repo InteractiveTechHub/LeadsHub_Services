@@ -1,5 +1,6 @@
 ﻿
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Enum;
 using LeadsHub.Core.Hubs;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
@@ -105,28 +106,30 @@ namespace LeadsHub.Core.Bac
         {
             foreach (Timeline timeline in lead.Timelines)
             {
-                timeline.LeadId = lead.Id;                
+                timeline.LeadId = lead.Id;   
+                timeline.ConsultantId = lead.ConsultantId;
+                timeline.Sender = MessageSender.customer;
                 timeline.UpdatedAt = DateTimeOffset.UtcNow;
 
-                if (timeline.Type.Equals(1))
+                if (timeline.Type.Equals(MessageType.Text) || timeline.Type.Equals(MessageType.Template))
                 {
                     var response = await _timelineRepository.RegisterMessageTextAsync(timeline);
                 }
 
-                if (timeline.Type.Equals(2))
+                if (timeline.Type.Equals(MessageType.Reaction))
                 {
                     // Update or register reaction
                     //TODO: Try to find reaction (insert or update), Fetch the message to get the message body
                     // Update frontend timeline with the reaction.
                 }
 
-                if (timeline.Type.Equals(3))
+                if (timeline.Type.Equals(MessageType.Document))
                 {
                     // TODO: Mark as deleted when the message is deleted;
 
                     // Register image
                     var response = await _timelineRepository.RegisterMessageFileAsync(timeline);
-                }                
+                }
             }
 
             await NotifyNewMessage(lead);

@@ -1,4 +1,6 @@
 ﻿
+using LeadsHub.Core.Enum;
+
 namespace LeadsHub.Core.Models
 {
     public sealed class LastMessageSet
@@ -11,6 +13,8 @@ namespace LeadsHub.Core.Models
 
         public DateTimeOffset LastMessageDate { get; set; }
 
-        public int Status { get; set; }
+        public MessageStatus Status { get; set; }
+
+        public MessageSender Sender { get; set; }
     }
 }
