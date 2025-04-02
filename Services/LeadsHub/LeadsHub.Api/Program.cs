@@ -8,6 +8,7 @@ using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Services;
+using LeadsHub.Core.Services.Chat;
 using LeadsHub.Core.Utility;
 using LeadsHub.Data;
 using LeadsHub.Data.Repository;
@@ -18,14 +19,13 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Data;
 using System.Text;
-using WhatsApp.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 string connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
 SD.ConnectString = connectionString;
-SD.WhatsAppAPIBase = configuration["WhatsappUrls:SendReceiveMessage"];
+SD.WhatsAppAPIBase = configuration["WhatsAppBase"];
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -118,6 +118,7 @@ builder.Services.AddSwaggerGen();
 
 // Services
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddSingleton<IActiveChatManager, ActiveChatManager>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddSingleton<IDistributionService, DistributionService>();
 builder.Services.AddSingleton<ISendMessageService, SendMessageService>();
@@ -127,6 +128,7 @@ builder.Services.AddScoped<ICompanyBac, CompanyBac>();
 builder.Services.AddScoped<IConsultantBac, ConsultantBac>();
 builder.Services.AddSingleton<ILeadBrokerBac, LeadBrokerBac>();
 builder.Services.AddScoped<ILeadManagerBac, LeadManagerBac>();
+builder.Services.AddScoped<IIntegrationBac, IntegrationBac>();
 builder.Services.AddSingleton<ITimelineBac, TimelineBac>();
 builder.Services.AddSingleton<IWhatsAppBac, WhatsAppBac>();
 
@@ -134,6 +136,7 @@ builder.Services.AddSingleton<IWhatsAppBac, WhatsAppBac>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IConsultantRepository, ConsultantRepository>();
 builder.Services.AddSingleton<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IIntegrationRepository, IntegrationRepository>();
 builder.Services.AddSingleton<ILeadRepository, LeadRepository>();
 builder.Services.AddSingleton<ILeadBrokerRepository, LeadBrokerRepository>();
 builder.Services.AddScoped<ILeadManagerRepository, LeadManagerRepository>();
@@ -156,7 +159,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<LeadCardHub>("/leadhub");
+app.MapHub<LeadHub>("/leadhub");
 
 await ApplyMigrationAsync();
 ApplyUserAndRolesAsync();

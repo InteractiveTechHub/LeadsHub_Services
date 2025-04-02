@@ -1,4 +1,6 @@
 ﻿
+using LeadsHub.Core.Enum;
+
 namespace LeadsHub.Core.Models
 {
     public sealed class LeadCard
@@ -38,24 +40,36 @@ namespace LeadsHub.Core.Models
         /// </summary>
         public string LeadName { get; private set; } = string.Empty;
 
-        /// <summary>
-        /// The Total of new messages in the lead chat
-        /// </summary>
-        public long TotalNewMessages { get; private set; }
+        public LeadPhase LeadPhase { get; set; }
 
-        /// <summary>
-        /// The status of the lead
-        /// </summary>
-        public string Status { get; private set; } = string.Empty;
+        public string LastMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// Last message time in the Message chat
         /// </summary>
         public DateTimeOffset LastMessageDate { get; private set; }
 
-        public string LastMessage { get; set; } = string.Empty;
+        /// <summary>
+        /// Lead main phone number
+        /// </summary>
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Lead main email
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The status of the lead
+        /// </summary>
+        public string Status { get; private set; } = string.Empty;
 
         public int TimelineId { get; set; }
+
+        /// <summary>
+        /// The Total of new messages in the lead chat
+        /// </summary>
+        public long TotalNewMessages { get; private set; }
 
         public string UserIdentityId { get; private set; } = string.Empty;
     }

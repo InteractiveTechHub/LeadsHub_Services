@@ -6,23 +6,26 @@ using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
+using LeadsHub.Core.Services.Chat;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LeadsHub.Core.Bac
 {
     public sealed class LeadBrokerBac : ILeadBrokerBac
     {
+        private readonly IActiveChatManager _activeChatManager;
         private readonly ICustomerRepository _customerRepository;
         private readonly IDistributionService _distributionService;
         private readonly ILeadBrokerRepository _leadBrokerRepository;
         private readonly ITimelineRepository _timelineRepository;      
 
-        private readonly IHubContext<LeadCardHub> _hubContext;
+        private readonly IHubContext<LeadHub> _hubContext;
 
         public LeadBrokerBac(
+            IActiveChatManager activeChatManager,
             ICustomerRepository customerRepository,
             IDistributionService distributionService,
-            IHubContext<LeadCardHub> hubContext,
+            IHubContext<LeadHub> hubContext,
             ILeadBrokerRepository leadBrokerRepository,
             ITimelineRepository timelineRepository)
         {
@@ -131,6 +134,9 @@ namespace LeadsHub.Core.Bac
                     var response = await _timelineRepository.RegisterMessageFileAsync(timeline);
                 }
             }
+
+            _activeChatManager.AddLead(lead.Id, lead.Timelines.Last().MessageDate);
+            _activeChatManager.CanSendFreeMessage(lead.Id);
 
             await NotifyNewMessage(lead);
             await NotifyNewLeadToManagerAsync(lead);

@@ -4,20 +4,25 @@ using AdaptiveKitCore.Requests;
 using LeadsHub.Core.Enum;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
+using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Payloads;
+using LeadsHub.Core.Request;
+using LeadsHub.Core.Responses;
 
 namespace LeadsHub.Core.Bac
 {
     public class WhatsAppBac : IWhatsAppBac
     {
-        private ILeadBrokerBac _leadBrokerBac;
+        private readonly ILeadBrokerBac _leadBrokerBac;
+        private readonly ISendMessageService _sendMessageService;
         private readonly IWhatsAppRepository _whatsAppRepository;
 
-        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository)
+        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository, ISendMessageService sendMessageService)
         {
             _leadBrokerBac = leadBrokerBac;
             _whatsAppRepository = whatsAppRepository;
+            _sendMessageService = sendMessageService;
         }
 
         public async Task ReceiveMessageFromWhatsappAsync(WhatsAppPayLoad whatsappMessage)
@@ -97,6 +102,13 @@ namespace LeadsHub.Core.Bac
             }
 
             await _leadBrokerBac.ReceiveLeadsAsync(lead);
+        }
+
+        public async Task<BaseResponse<Integration>> FetchAllWhatsAppByRequestAsync(FilterRequest filterRequest)
+        {
+            var response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filterRequest);
+
+            return response;
         }
     }
 }

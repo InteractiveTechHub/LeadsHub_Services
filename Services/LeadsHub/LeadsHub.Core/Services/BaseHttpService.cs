@@ -49,6 +49,38 @@ namespace LeadsHub.Core.Services
             return response;
         }
 
+        public async Task<JsonResponse> GetAsync(MessageRequest request)
+        {
+            JsonResponse response = new();
+
+            try
+            {
+                HttpClient client = _httpClientFactory.CreateClient("leadsManager");
+
+                HttpRequestMessage message = new();
+                message.Headers.Add("Accept", "application/json");
+
+                if (!string.IsNullOrWhiteSpace(request.AccessToken))
+                {
+                    message.Headers.Add("Authorization", $"Bearer {request.AccessToken}");
+                }
+
+                message.Method = HttpMethod.Get;
+                message.RequestUri = new Uri($"{request.Url}");
+                message.Content = new StringContent(request.DataJson, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage apiResponse = await client.SendAsync(message);
+
+                response = await GetDefaultResponse(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage(ex.Message);
+            }
+
+            return response;
+        }
+
         /// <summary>
         /// Get default response object
         /// </summary>

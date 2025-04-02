@@ -1,4 +1,5 @@
-﻿using LeadsHub.Core.Interfaces.IBac;
+﻿using AdaptiveKitCore.Requests;
+using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Payloads;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,17 @@ namespace LeadsHub.Api.Controllers
             await _whatsappBac.ReceiveMessageFromWhatsappAsync(whatsappPayLoad);
 
             return Ok();
+        }
+
+        public async Task<IActionResult> FetchAllWhatsAppByRequest(FilterRequest filterRequest)
+        {
+            var response = await _whatsappBac.FetchAllWhatsAppByRequestAsync(filterRequest);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
         }
     }
 }

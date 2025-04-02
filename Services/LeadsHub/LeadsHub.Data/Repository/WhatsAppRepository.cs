@@ -6,8 +6,9 @@ using LeadsHub.Core.Responses;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Extentions;
 using LeadsHub.Core.Interfaces.IRepository;
+using AdaptiveKitCore.Responses;
 
-namespace WhatsApp.Data.Repository
+namespace LeadsHub.Data.Repository
 {
     public class WhatsAppRepository : IWhatsAppRepository
     {
@@ -18,9 +19,16 @@ namespace WhatsApp.Data.Repository
             "w.\"Id\", " +
             "w.\"PhoneNumberId\", " +
             "w.\"BusinessAccountId\", " +
-            "w.\"AccessToken\" " +
+            "w.\"AccessToken\", " +
+            "wt.\"Id\", " +
+            "wt.\"Name\", " +
+            "wt.\"TemplateBodyMirror\", " +
+            "wt.\"Type\", " +
+            "wt.\"Variables\", " +
+            "wt.\"Enabled\" " +
             "FROM \"Integration\" i " +
-            "INNER JOIN \"WhatsAppConfig\" w ON i.\"WhatsAppConfigId\" = w.\"Id\"";
+            "INNER JOIN \"WhatsAppConfig\" w ON i.\"WhatsAppConfigId\" = w.\"Id\"" +
+            "LEFT JOIN \"WhatsAppTemplate\" wt ON w.\"Id\" = wt.\"WhatsAppConfigId\" ";
 
         private readonly IDbConnection _dbConnection;
 
@@ -39,9 +47,15 @@ namespace WhatsApp.Data.Repository
 
                 string query = string.Join(' ', selectIntegration, whereClause);
 
-                var result = await _dbConnection.QueryAsync<Integration, WhatsAppConfig, Integration>(query, (integration, whatsapp) =>
+                var result = await _dbConnection.QueryAsync<Integration, WhatsAppConfig, WhatsAppTemplate, Integration>(query, 
+                    (integration, whatsapp, WhatsAppTemplate) =>
                 {
                     integration.WhatsAppConfig = whatsapp;
+
+                    if (WhatsAppTemplate is not null)
+                    {
+                        integration.WhatsAppConfig.WhatsAppTemplates.Add(WhatsAppTemplate);
+                    }            
 
                     return integration;
                 }, 
@@ -55,25 +69,31 @@ namespace WhatsApp.Data.Repository
             }
 
             return response;
-        }       
-
-        /*public async Task<ConfigResponse> FetchConfigByCompanyIdAsync(long companyId)
+        }
+        
+        public async Task<SimpleResponse<WhatsAppTemplate>> FetchWhatsAppTemplateByIdAsync(long id)
         {
-            ConfigResponse response = new();
+            SimpleResponse<WhatsAppTemplate> response = new();
 
             try
             {
-                var result = await _dbConnection.QueryAsync<WhatsAppConfig>($"SELECT * FROM WhatsappConfig WHERE CompanyId = '{companyId}'");
+                string query = "SELECT * FROM \"WhatsAppTemplate\" WHERE \"Id\" = @Id ";
 
-                response.ResponseData = result.ToList();
+                WhatsAppTemplate? result = await _dbConnection.QueryFirstOrDefaultAsync<WhatsAppTemplate>(query, new { Id = id});
+                if (result is null)
+                {
+                    response.AddErrorMessage("Template not found");
+                    return response;
+                }
+
+                response.Model = result;
             }
             catch (Exception ex)
             {
-                // log here
-                response.AddExceptionMessage($"WhatsAppConfigRepository.FetchWhatsAppConfigByComapnyIdAsync :: {ex.Message}");
+                response.AddExceptionMessage(ex.Message);
             }
 
             return response;
-        }*/
+        }
     }
 }

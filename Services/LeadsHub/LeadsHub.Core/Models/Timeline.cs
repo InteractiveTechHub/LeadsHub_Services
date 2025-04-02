@@ -31,12 +31,20 @@ namespace LeadsHub.Core.Models
         /// </summary>
         public long? MessageFileId { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long? MessageReactionId { get; set; }
 
         /// <summary>
         /// The message text Id
         /// </summary>
         public long? MessageTextId { get; set; }
+
+        /// <summary>
+        /// The template Id
+        /// </summary>
+        public long? TemplateId { get; set; }
 
         /// <summary>
         /// The date time that the message was read.
@@ -63,16 +71,6 @@ namespace LeadsHub.Core.Models
         public MessageFile? MessageFile { get; set; }
 
         public MessageReaction? MessageReaction { get; set; }
-
-        public void SetMessageFile(MessageFile messageFile) 
-        {
-            if (messageFile is null || string.IsNullOrWhiteSpace(messageFile.Url))
-            {
-                return;
-            }
-
-            MessageFile = (messageFile);
-        }
 
         public void ConvertsTimeUnixToUtcDateTime(string timesStamp)
         {

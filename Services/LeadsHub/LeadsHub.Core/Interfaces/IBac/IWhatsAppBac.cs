@@ -8,9 +8,7 @@ namespace LeadsHub.Core.Interfaces.IBac
 {
     public interface IWhatsAppBac
     {
-        //Task<ConfigResponse> FetchConfigByCompanyIdAsync(long companyId);
-
-        //Task<BaseResponse<Integration>> FetchWhatsappConfigByRequestAsync(FilterRequest filterRequest);
+        Task<BaseResponse<Integration>> FetchAllWhatsAppByRequestAsync(FilterRequest filterRequest);
 
         Task ReceiveMessageFromWhatsappAsync(WhatsAppPayLoad whatsappMessage);
     }

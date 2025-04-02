@@ -1,6 +1,8 @@
 ﻿
 using AdaptiveKitCore.Requests;
+using LeadsHub.Core.Dtos;
 using LeadsHub.Core.Interfaces.IBac;
+using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,18 @@ namespace LeadsHub.Api.Controllers
             filterRequest.AddSortExpressionDescending("CreatedAt");
 
            LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(filterRequest);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("templates")]
+        public async Task<IActionResult> FetchTemplatesAsync(long leadId)
+        {
+            BaseResponse<TemplatesPerType> response = await _leadManagerBac.FetchTemplatesAsync(leadId);
             if (response.HasAnyErrorMessage)
             {
                 return BadRequest(response);

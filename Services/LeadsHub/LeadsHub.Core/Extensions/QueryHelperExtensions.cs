@@ -36,23 +36,26 @@ namespace LeadsHub.Core.Extentions
 
         private static string BuildComparisonStatement(FilterDescriptor filter)
         {
+            string value = filter.Value != null && filter.Value.GetType().IsEnum ? 
+                Convert.ToInt32(filter.Value).ToString() : filter.Value?.ToString() ?? string.Empty;
+
             string statement = filter.FilterOperator switch
             { 
-                FilterOperatorEnum.Equals => $"= '{filter.Value}'",
-                FilterOperatorEnum.NotEquals => $"<> '{filter.Value}'",
-                FilterOperatorEnum.Contains => $"ILIKE '%{filter.Value}%'",
-                FilterOperatorEnum.NotContains => $"NOT ILIKE '%{filter.Value}%'",
-                FilterOperatorEnum.StartsWith => $"ILIKE '{filter.Value}%'",
-                FilterOperatorEnum.EndsWith => $"ILIKE '%{filter.Value}'",
-                FilterOperatorEnum.GreaterThan => $"> '{filter.Value}'",
-                FilterOperatorEnum.LessThan => $"< '{filter.Value}'",
-                FilterOperatorEnum.GreaterThanOrEquals => $">= '{filter.Value}'",
-                FilterOperatorEnum.LessThanOrEquals => $"<= '{filter.Value}'",
-                FilterOperatorEnum.In => $"IN ({filter.Value})",
-                FilterOperatorEnum.NotIn => $"NOT IN ({filter.Value})",
+                FilterOperatorEnum.Equals => $"= '{value}'",
+                FilterOperatorEnum.NotEquals => $"<> '{value}'",
+                FilterOperatorEnum.Contains => $"ILIKE '%{value}%'",
+                FilterOperatorEnum.NotContains => $"NOT ILIKE '%{value}%'",
+                FilterOperatorEnum.StartsWith => $"ILIKE '{value}%'",
+                FilterOperatorEnum.EndsWith => $"ILIKE '%{value}'",
+                FilterOperatorEnum.GreaterThan => $"> '{value}'",
+                FilterOperatorEnum.LessThan => $"< '{value}'",
+                FilterOperatorEnum.GreaterThanOrEquals => $">= '{value}'",
+                FilterOperatorEnum.LessThanOrEquals => $"<= '{value}'",
+                FilterOperatorEnum.In => $"IN ({value})",
+                FilterOperatorEnum.NotIn => $"NOT IN ({value})",
                 FilterOperatorEnum.IsNull => "IS NULL",
                 FilterOperatorEnum.IsNotNull => "IS NOT NULL",                
-                _ => $"= '{filter.Value}'"
+                _ => $"= '{value}'"
             };
 
             return statement;

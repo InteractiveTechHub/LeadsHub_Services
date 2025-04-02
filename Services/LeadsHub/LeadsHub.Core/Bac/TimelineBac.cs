@@ -10,6 +10,7 @@ using LeadsHub.Core.Models;
 using LeadsHub.Core.Payloads.Whatsapp.SendMessage;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
+using LeadsHub.Core.Services.Chat;
 using LeadsHub.Core.Utility;
 using System.Text.Json;
 
@@ -17,13 +18,21 @@ namespace LeadsHub.Core.Bac
 {
     public sealed class TimelineBac : ITimelineBac
     {
+        private readonly IActiveChatManager _activeChatManager;
         private readonly ILeadRepository _leadRepository;
         private readonly ISendMessageService _sendMessageService;
         private readonly ITimelineRepository _timelineRepository;
         private readonly IWhatsAppRepository _whatsAppRepository;
 
-        public TimelineBac(ILeadRepository leadRepository, ISendMessageService sendMessageService, ITimelineRepository timelineRepository, IWhatsAppRepository whatsAppRepository)
+
+
+        public TimelineBac(IActiveChatManager activeChatManager, 
+            ILeadRepository leadRepository, 
+            ISendMessageService sendMessageService, 
+            ITimelineRepository timelineRepository, 
+            IWhatsAppRepository whatsAppRepository)
         {
+            _activeChatManager = activeChatManager;
             _leadRepository = leadRepository;
             _sendMessageService = sendMessageService;
             _timelineRepository = timelineRepository;
@@ -37,6 +46,12 @@ namespace LeadsHub.Core.Bac
             {
                 return response;
             }
+
+            DateTimeOffset lastMessageDateTime = response.ResponseData.Select(r => r.MessageDate).Last();
+
+            _activeChatManager.AddLead(leadId, lastMessageDateTime);
+            response.CanSendMessage = _activeChatManager.CanSendFreeMessage(leadId);
+            // TODO: Fetch the templates to send;
 
             return response;
         }
@@ -83,22 +98,35 @@ namespace LeadsHub.Core.Bac
                 {
                     PreviewUrl = false,
                     Body = timeline.Message!.Body
-                };
-
-                response = await _timelineRepository.RegisterMessageTextAsync(timeline);              
+                };            
             }
 
             // template
             if (timeline.Type == MessageType.Template)
             {
+                var templateResponse = await _whatsAppRepository.FetchWhatsAppTemplateByIdAsync(timeline.TemplateId!.Value);
+                if (templateResponse.HasAnyErrorMessage)
+                {
+                    response.Messages.AddRange(templateResponse.Messages);
+                    return response;
+                }
+
+                WhatsAppTemplate template = templateResponse.Model;
+
                 sendMessagePayLoad.Template = new()
                 {
-                    Name = "",
+                    Name = template.Name,
                     Language = new()
                     {
-                        Code = "pt_BR",
+                        Code = template.Language,
                     }
                 };
+            }
+
+            response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+            if (response.HasAnyErrorMessage)
+            {
+                return response;
             }
 
             var result = await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);

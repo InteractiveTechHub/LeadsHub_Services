@@ -1,15 +1,24 @@
 ﻿
+using LeadsHub.Core.Interfaces.IServices;
+using LeadsHub.Core.Services.Chat;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 
 namespace LeadsHub.Core.Hubs
 {
-    public class LeadCardHub : Hub
+    public class LeadHub : Hub
     {
-       // private static readonly ConcurrentDictionary<string, string> UserConnections = new();
+        // private static readonly ConcurrentDictionary<string, string> UserConnections = new();
 
-       // public static IReadOnlyDictionary<string, string> GetConnectedUsers() => UserConnections;
+        // public static IReadOnlyDictionary<string, string> GetConnectedUsers() => UserConnections;
+
+        private readonly IActiveChatManager _activeChatManager;
+
+        public LeadHub(IActiveChatManager activeChatManager)
+        {
+            _activeChatManager = activeChatManager;
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -48,14 +57,15 @@ namespace LeadsHub.Core.Hubs
             }
         }
 
-        public async Task LeaveLeadChatGroup(string leadId)
+        public async Task LeaveLeadChatGroup(string leadIdentifier, long leadId)
         {
             string? userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? Context.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 
-            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(leadId))
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(leadIdentifier))
             {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"lead-{leadId}");
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"lead-{leadIdentifier}");                
+                _activeChatManager.RemoveLead(leadId);
             }
         }
     }

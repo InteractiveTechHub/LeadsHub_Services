@@ -5,7 +5,6 @@ using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Utility;
 using Npgsql;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LeadsHub.Data.Repository
 {
@@ -19,6 +18,7 @@ namespace LeadsHub.Data.Repository
             + "ld.\"CampaignId\", "
             + "ld.\"AdCode\", "
             + "ld.\"Channel\", "
+            + "ld.\"Phase\", "
             + "ld.\"Status\", "
             + "ld.\"IntegrationId\", "
             + "c.\"Id\", "

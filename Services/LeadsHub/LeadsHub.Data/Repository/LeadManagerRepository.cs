@@ -11,10 +11,11 @@ namespace LeadsHub.Data.Repository
 {
     public sealed class LeadManagerRepository : ILeadManagerRepository
     {
-        private const string selectLeadCard = "SELECT ld.\"Id\" As LeadId, "
+        private const string selectLeadCards = "SELECT ld.\"Id\" As LeadId, "
                                                     + "ld.\"Identifier\", "
                                                     + "ld.\"CompanyId\", "
                                                     + "ld.\"Channel\", "
+                                                    + "ld.\"Phase\", "
                                                     + "ld.\"Status\", "
                                                     + "ld.\"CreatedAt\" AS CreatedAt, "
                                                     + "c.\"Id\" As ConsultantId, "
@@ -22,6 +23,7 @@ namespace LeadsHub.Data.Repository
                                                     + "c.\"FullName\" AS ConsultantName, "
                                                     + "con.\"Name\" AS LeadName, "
                                                     + "con.\"PhoneNumber\", "
+                                                    + "con.\"Email\", "
                                                     + "lm.\"LastMessage\", "
                                                     + "lm.\"LastMessageDate\", "
                                                     + "lm.\"Status\", "
@@ -36,6 +38,7 @@ namespace LeadsHub.Data.Repository
             + "ld.\"Identifier\", "
             + "ld.\"CompanyId\", "
             + "ld.\"Channel\", "
+            + "ld.\"Phase\", "
             + "ld.\"Status\", "
             + "ld.\"CreatedAt\", "
             + "c.\"Id\", "
@@ -43,6 +46,7 @@ namespace LeadsHub.Data.Repository
             + "c.\"FullName\", "
             + "con.\"Name\", "
             + "con.\"PhoneNumber\", "
+            + "con.\"Email\", "
             + "lm.\"LastMessage\", "
             + "lm.\"LastMessageDate\", "
             + "lm.\"LastMessageDate\", "
@@ -81,7 +85,7 @@ namespace LeadsHub.Data.Repository
                     offset += $"OFFSET {filterRequest.Skip} ROWS FETCH NEXT {filterRequest.PageSize} ROW ONLY;";
                 }
 
-                string querySql = string.Join(' ', selectLeadCard, WhereClause, groupBy, sortExpression, offset);
+                string querySql = string.Join(' ', selectLeadCards, WhereClause, groupBy, sortExpression, offset);
                 string querySqlCount = string.Join(' ', selectLeadCount, WhereClause);
 
                 IEnumerable<LeadCard> result = await _dbConnection.QueryAsync<LeadCard>(querySql);
@@ -100,6 +104,6 @@ namespace LeadsHub.Data.Repository
             }
 
             return response;
-        }    
+        }
     }
 }
