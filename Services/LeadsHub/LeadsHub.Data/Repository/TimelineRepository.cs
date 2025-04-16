@@ -209,6 +209,27 @@ namespace LeadsHub.Data.Repository
             return response;
         }
 
+        public async Task UpdateTimelineAsync(Timeline timeline)
+        {
+            string updateCommand = "UPDATE \"Timeline\" SET \"ConsultantId\"=@ConsultantId, \"MessageId\"=@MessageId, \"Sender\"=@Sender, \"Status\"=@Status, \"ReadAt\"=@ReadAt, \"UpdatedAt\"=@UpdatedAt WHERE \"TimelineId\"=@TimelineId;";
+
+            try
+            {
+                using var connection = new NpgsqlConnection(SD.ConnectString);
+
+                var result = await connection.ExecuteAsync(updateCommand, timeline);
+                if (result == 0)
+                {
+                    // Not updated
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log here
+                string errorMessage = ex.Message;
+            }
+        }
+
         private async Task<Timeline> RegisterTimelineAsync(Timeline timeline, NpgsqlTransaction transaction)
         {
             string insertTimeline = "INSERT INTO \"Timeline\" (\"LeadId\", \"ConsultantId\", \"Sender\", \"Type\", \"Status\", \"MessageId\", \"MessageDate\", \"ReadAt\", \"MessageTextId\", \"MessageFileId\") " +

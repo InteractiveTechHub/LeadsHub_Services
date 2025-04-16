@@ -130,10 +130,11 @@ namespace LeadsHub.Core.Bac
             if (result.HasAnyErrorMessage)
             {
                 response.Messages.AddRange(result.Messages);
+                response.Model.Status = MessageStatus.Failed;
 
-                timeline.Status = MessageStatus.Failed;
-               
-                // TODO: Update Timeline
+                await _timelineRepository.UpdateTimelineAsync(response.Model);
+
+                // TODO: Should log the whatsapp exceptions and errors.
             }
 
             return response;

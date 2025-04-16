@@ -15,5 +15,7 @@ namespace LeadsHub.Core.Interfaces.IRepository
         Task<SimpleResponse<Timeline>> RegisterMessageTextAsync(Timeline timeline);
 
         Task<SimpleResponse<Timeline>> RegisterMessageFileAsync(Timeline timeline);
+
+        Task UpdateTimelineAsync(Timeline timeline);
     }
 }
