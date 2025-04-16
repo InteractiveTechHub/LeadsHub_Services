@@ -31,7 +31,7 @@ SD.WhatsAppAPIBase = configuration["WhatsAppBase"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost", "http://localhost:4200", "http://tecnoprohub.com", "https://www.tecnoprohub.com")
+        builder.WithOrigins("http://localhost", "http://localhost:4200", "http://tecnoprohub.com", "http://www.tecnoprohub.com", "https://tecnoprohub.com", "https://www.tecnoprohub.com")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
