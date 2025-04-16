@@ -10,7 +10,6 @@ using LeadsHub.Core.Models;
 using LeadsHub.Core.Payloads.Whatsapp.SendMessage;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
-using LeadsHub.Core.Services.Chat;
 using LeadsHub.Core.Utility;
 using System.Text.Json;
 
@@ -23,8 +22,6 @@ namespace LeadsHub.Core.Bac
         private readonly ISendMessageService _sendMessageService;
         private readonly ITimelineRepository _timelineRepository;
         private readonly IWhatsAppRepository _whatsAppRepository;
-
-
 
         public TimelineBac(IActiveChatManager activeChatManager, 
             ILeadRepository leadRepository, 

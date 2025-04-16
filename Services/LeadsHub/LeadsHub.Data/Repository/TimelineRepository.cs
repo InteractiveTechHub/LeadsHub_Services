@@ -12,9 +12,35 @@ namespace LeadsHub.Data.Repository
 {
     public sealed class TimelineRepository : ITimelineRepository
     {
-        private const string selectTimeline = "SELECT t.\"Id\", t.\"LeadId\", t.\"ConsultantId\", t.\"Sender\", t.\"MessageDate\", t.\"ReadAt\", t.\"Status\", t.\"Type\", t.\"MessageTextId\", t.\"MessageFileId\", mt.\"Id\", mt.\"Body\", mf.\"Id\", mf.\"Url\", mf.\"Caption\", mr.\"Id\", mr.\"Emoji\" FROM \"Timeline\" t LEFT JOIN \"MessageText\" mt ON mt.\"Id\" = t.\"MessageTextId\" LEFT JOIN \"MessageFile\" mf ON mf.\"Id\" = t.\"MessageFileId\" LEFT JOIN \"MessageReaction\" mr ON mr.\"TimelineId\" = t.\"Id\" WHERE t.\"LeadId\" = @LeadId ORDER BY \"MessageDate\"";
+        private const string selectTimeline = "SELECT " +
+            "t.\"Id\", " +
+            "t.\"LeadId\", " +
+            "t.\"ConsultantId\", " +
+            "t.\"Sender\", " +
+            "t.\"MessageDate\", " +
+            "t.\"ReadAt\", " +
+            "t.\"Status\", " +
+            "t.\"Type\", " +
+            "t.\"MessageTextId\", " +
+            "t.\"MessageFileId\", " +
+            "mt.\"Id\", " +
+            "mt.\"Body\", " +
+            "mf.\"Id\", " +
+            "mf.\"Url\", " +
+            "mf.\"Caption\", " +
+            "mr.\"Id\", " +
+            "mr.\"Emoji\" " +
+            "FROM \"Timeline\" t " +
+            "LEFT JOIN \"MessageText\" mt ON mt.\"Id\" = t.\"MessageTextId\" " +
+            "LEFT JOIN \"MessageFile\" mf ON mf.\"Id\" = t.\"MessageFileId\" " +
+            "LEFT JOIN \"MessageReaction\" mr ON mr.\"Id\" = t.\"MessageReactionId\" " +
+            "WHERE t.\"LeadId\" = @LeadId ORDER BY \"MessageDate\"";
 
-        private const string selectTimelineCount = "SELECT COUNT(1) FROM \"Timeline\" t LEFT JOIN \"MessageText\" mt ON mt.\"Id\" = t.\"MessageTextId\" LEFT JOIN \"MessageFile\" mf ON mf.\"Id\" = t.\"MessageFileId\" LEFT JOIN \"MessageReaction\" mr ON mr.\"TimelineId\" = t.\"Id\" WHERE t.\"LeadId\" = @LeadId";
+        private const string selectTimelineCount = "SELECT COUNT(1) " +
+            "FROM \"Timeline\" t " +
+            "LEFT JOIN \"MessageText\" mt ON mt.\"Id\" = t.\"MessageTextId\" " +
+            "LEFT JOIN \"MessageFile\" mf ON mf.\"Id\" = t.\"MessageFileId\" " +
+            "LEFT JOIN \"MessageReaction\" mr ON mr.\"Id\" = t.\"MessageReactionId\" WHERE t.\"LeadId\" = @LeadId";
         
         private const string insertUpdateLastMessage = "INSERT INTO \"LastMessage\" " +
             "(\"LeadId\", " +

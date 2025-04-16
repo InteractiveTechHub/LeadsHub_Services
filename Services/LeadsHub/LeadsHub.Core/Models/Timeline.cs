@@ -24,7 +24,7 @@ namespace LeadsHub.Core.Models
         /// The message date of the external system
         /// or sent by our system
         /// </summary>
-        public DateTimeOffset MessageDate { get; set; }
+        public DateTimeOffset MessageDate { get; set; } = new();
 
         /// <summary>
         /// The message file Id

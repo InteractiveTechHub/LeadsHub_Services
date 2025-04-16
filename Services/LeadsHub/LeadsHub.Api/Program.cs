@@ -31,7 +31,7 @@ SD.WhatsAppAPIBase = configuration["WhatsAppBase"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
-        builder.WithOrigins("http://localhost", "http://localhost:4200", "http://tecnoprohub.com", "http://www.tecnoprohub.com")
+        builder.WithOrigins("http://localhost", "http://localhost:4200", "http://tecnoprohub.com", "https://www.tecnoprohub.com")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
@@ -104,7 +104,8 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR(options =>
 {
-    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(45);
     options.HandshakeTimeout = TimeSpan.FromSeconds(60);
 });
 

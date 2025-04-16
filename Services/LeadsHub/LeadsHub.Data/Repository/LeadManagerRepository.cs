@@ -31,7 +31,7 @@ namespace LeadsHub.Data.Repository
                                                 + "FROM \"Lead\" ld "
                                                 + "INNER JOIN \"Contact\" con ON con.\"Id\" = ld.\"ContactId\" "
                                                 + "LEFT JOIN \"Consultant\" c ON c.\"Id\" = ld.\"ConsultantId\" "
-                                                + "LEFT JOIN \"Timeline\" t ON t.\"LeadId\" = ld.\"Id\""
+                                                + "LEFT JOIN \"Timeline\" t ON t.\"LeadId\" = ld.\"Id\" "
                                                 + "LEFT JOIN \"LastMessage\" lm ON lm.\"LeadId\" = ld.\"Id\"";
 
         private string groupBy = "GROUP BY ld.\"Id\", "

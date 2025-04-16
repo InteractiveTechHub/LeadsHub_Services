@@ -32,6 +32,6 @@ namespace LeadsHub.Core.Models
 
         public Integration Integration { get; set; } = new();
 
-        public List<Timeline> Timelines { get; set; } = new();
+        public List<Timeline> Timelines { get; set; } = [];
     }
 }

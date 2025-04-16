@@ -93,7 +93,8 @@ CREATE TABLE IF NOT EXISTS public."Lead"
     "IntegrationId" bigint NOT NULL,
     "AdCode" character varying(100) COLLATE pg_catalog."default" NULL,
     "Channel" int NULL,
-	"Status" INT NOT NULL DEFAULT 1,
+    "Phase" SmallInt NOT NULL DEFAULT 1,
+	"Status" SmallInt NOT NULL DEFAULT 1,
 	"CreatedAt" timestamp with time zone NOT NULL DEFAULT timezone('UTC', CURRENT_TIMESTAMP),
 	"UpdatedAt"  timestamp with time zone NOT NULL DEFAULT timezone('UTC', CURRENT_TIMESTAMP),
     CONSTRAINT "PK_Lead" PRIMARY KEY ("Id"),
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS public."MessageReaction"
 	"Emoji" character varying(20) COLLATE pg_catalog."default" NULL,
 	"CreatedAt" timestamp with time zone NOT NULL DEFAULT timezone('UTC', CURRENT_TIMESTAMP),
 	"UpdatedAt"  timestamp with time zone NOT NULL DEFAULT timezone('UTC', CURRENT_TIMESTAMP),
-	CONSTRAINT "PK_MessageReaction" PRIMARY KEY ("Id"),
+	CONSTRAINT "PK_MessageReaction" PRIMARY KEY ("Id")
 );
 
 CREATE TABLE IF NOT EXISTS public."Timeline" 
@@ -164,7 +165,7 @@ CREATE TABLE IF NOT EXISTS public."Timeline"
 	CONSTRAINT "FK_Timeline_MessageFile_MessageFileId" FOREIGN KEY ("MessageFileId")
     	REFERENCES public."MessageFile" ("Id") MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT "FK_Timeline_MessageReaction_MessageReactionId" FOREIGN KEY ("MessageReactionId")
     	REFERENCES public."MessageFile" ("Id") MATCH SIMPLE
         ON UPDATE CASCADE

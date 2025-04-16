@@ -53,6 +53,11 @@ namespace LeadsHub.Core.Bac
                 return;
             }
 
+            if (response.ResponseData is null || !response.ResponseData.Any())
+            {
+                return;
+            }
+
             lead.CompanyId = response.ResponseData.Select(r => r.CompanyId).FirstOrDefault();
             lead.Contact.Name = change.Value.Contacts.Select(c => c.Profile.Name).FirstOrDefault() ?? string.Empty;
             lead.IntegrationId = response.ResponseData.Select(r => r.Id).FirstOrDefault();

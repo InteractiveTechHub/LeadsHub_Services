@@ -29,6 +29,7 @@ namespace LeadsHub.Core.Bac
             ILeadBrokerRepository leadBrokerRepository,
             ITimelineRepository timelineRepository)
         {
+            _activeChatManager = activeChatManager;
             _customerRepository = customerRepository;
             _distributionService = distributionService;
             _hubContext = hubContext;
@@ -62,7 +63,7 @@ namespace LeadsHub.Core.Bac
 
             lead.Contact.Id = contactId;
             lead.ContactId = contactId;
-            lead.ConsultantId = consultant.Id;
+            lead.ConsultantId = consultant?.Id;
             lead.Consultant = consultant;
 
             SimpleResponse<Lead> leadResponse = await _leadBrokerRepository.RegisterLeadAsync(lead);
@@ -135,7 +136,7 @@ namespace LeadsHub.Core.Bac
                 }
             }
 
-            _activeChatManager.AddLead(lead.Id, lead.Timelines.Last().MessageDate);
+            _activeChatManager.AddLead(lead.Id, lead.Timelines.Select(t => t.MessageDate).Last());
             _activeChatManager.CanSendFreeMessage(lead.Id);
 
             await NotifyNewMessage(lead);

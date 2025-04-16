@@ -30,7 +30,7 @@ namespace LeadsHub.Core.Services.Chat
             // The remaining time until reach 24hr
             var timeUntilBlock = TimeSpan.FromHours(24) - (DateTimeOffset.UtcNow - lastMessageTime);
 
-            // It the time already overlaps 24h, block immediatly
+            // If the time already overlaps 24h, block immediatly
             if (timeUntilBlock <= TimeSpan.Zero)
             {
                 NotifyBlock(leadId);
