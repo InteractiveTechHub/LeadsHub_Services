@@ -130,6 +130,7 @@ builder.Services.AddScoped<IConsultantBac, ConsultantBac>();
 builder.Services.AddSingleton<ILeadBrokerBac, LeadBrokerBac>();
 builder.Services.AddScoped<ILeadManagerBac, LeadManagerBac>();
 builder.Services.AddScoped<IIntegrationBac, IntegrationBac>();
+builder.Services.AddSingleton<ISalesPipelineBac, SalesPipelineBac>();
 builder.Services.AddSingleton<ITimelineBac, TimelineBac>();
 builder.Services.AddSingleton<IWhatsAppBac, WhatsAppBac>();
 
@@ -141,6 +142,7 @@ builder.Services.AddScoped<IIntegrationRepository, IntegrationRepository>();
 builder.Services.AddSingleton<ILeadRepository, LeadRepository>();
 builder.Services.AddSingleton<ILeadBrokerRepository, LeadBrokerRepository>();
 builder.Services.AddScoped<ILeadManagerRepository, LeadManagerRepository>();
+builder.Services.AddSingleton<ISalesPipelineRepository, SalesPipelineRepository>();
 builder.Services.AddSingleton<ITimelineRepository, TimelineRepository>();
 builder.Services.AddSingleton<IWhatsAppRepository, WhatsAppRepository>();
 

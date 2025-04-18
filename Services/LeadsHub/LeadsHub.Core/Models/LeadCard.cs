@@ -33,12 +33,12 @@ namespace LeadsHub.Core.Models
         /// <summary>
         /// Id to identify the lead
         /// </summary>
-        public long LeadId { get; private set; }
+        public long LeadId { get; set; }
 
         /// <summary>
         /// The Name of the Lead
         /// </summary>
-        public string LeadName { get; private set; } = string.Empty;
+        public string LeadName { get; set; } = string.Empty;
 
         public LeadPhase LeadPhase { get; set; }
 
