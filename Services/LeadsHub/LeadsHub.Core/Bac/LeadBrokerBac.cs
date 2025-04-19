@@ -6,7 +6,6 @@ using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
-using LeadsHub.Core.Services.Chat;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LeadsHub.Core.Bac
@@ -17,6 +16,7 @@ namespace LeadsHub.Core.Bac
         private readonly ICustomerRepository _customerRepository;
         private readonly IDistributionService _distributionService;
         private readonly ILeadBrokerRepository _leadBrokerRepository;
+        private readonly ISalesPipelineBac _salesPipelineBac;
         private readonly ITimelineRepository _timelineRepository;      
 
         private readonly IHubContext<LeadHub> _hubContext;
@@ -27,6 +27,7 @@ namespace LeadsHub.Core.Bac
             IDistributionService distributionService,
             IHubContext<LeadHub> hubContext,
             ILeadBrokerRepository leadBrokerRepository,
+            ISalesPipelineBac salesPipelineBac,
             ITimelineRepository timelineRepository)
         {
             _activeChatManager = activeChatManager;
@@ -34,6 +35,7 @@ namespace LeadsHub.Core.Bac
             _distributionService = distributionService;
             _hubContext = hubContext;
             _leadBrokerRepository = leadBrokerRepository;
+            _salesPipelineBac = salesPipelineBac;
             _timelineRepository = timelineRepository;
         }
 
@@ -83,6 +85,9 @@ namespace LeadsHub.Core.Bac
             }            
 
             await RegisterLeadMessageAsync(lead);
+
+            // SalesPipeline
+            await _salesPipelineBac.CreateLeadStageAsync(lead);
 
             return leadResponse;
         }

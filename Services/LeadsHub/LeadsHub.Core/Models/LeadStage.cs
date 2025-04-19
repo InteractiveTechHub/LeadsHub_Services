@@ -2,11 +2,11 @@
 {
     public sealed class LeadStage : BaseModel
     {
-        public int LeadId { get; set; }
+        public long LeadId { get; set; }
 
         public long PipelineStageId { get; set; } = default!;
 
-        public int Position { get; set; }
+        public int Position { get; set; } = 0;
 
         public DateTimeOffset MovedAt { get; set; }
 

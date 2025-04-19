@@ -1,4 +1,5 @@
 ﻿
+using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Interfaces.IBac;
@@ -14,6 +15,41 @@ namespace LeadsHub.Core.Bac
         public SalesPipelineBac(ISalesPipelineRepository salesPipelineRepository)
         {
             _salesPipelineRepository = salesPipelineRepository; 
+        }
+
+        public async Task<SimpleResponse<LeadStage>> CreateLeadStageAsync(Lead lead)
+        {
+            SimpleResponse<LeadStage> response = new();
+
+            FilterRequest filterRequest = new();
+            filterRequest.AddFilter(nameof(SalesPipeline.CompanyId), FilterOperatorEnum.Equals, lead.CompanyId);
+
+            SalesPipelineResponse pipeResponse = await FetchPipelinesByRequestAsync(filterRequest);
+
+            long pipelineId = pipeResponse.ResponseData.Select(p => p.Id).FirstOrDefault();
+
+            PipelineStageResponse stageResponse = await _salesPipelineRepository.FetchPipelineStageByPipeIdAsync(pipelineId);
+
+            PipelineStage? stage = stageResponse.ResponseData.OrderBy(r => r.StageOrder).FirstOrDefault();
+            if (stage is null)
+            {
+                // TODO: log error
+                response.AddErrorMessage("Not possible to found the the pipeline stage", "PipelineStageNotFound");
+                
+                return response;
+            }
+
+            LeadStage leadStage = new();
+            leadStage.LeadId = lead.Id;
+            leadStage.PipelineStageId = stage.Id;
+
+            response = await _salesPipelineRepository.CreateLeadStageAsync(leadStage);
+            if (response.HasAnyErrorMessage)
+            {
+                return response;
+            }
+
+            return response;
         }
 
         public async Task<SimpleResponse<SalesPipeline>> CreatePipelineAsync(SalesPipeline salesPipeline)
@@ -56,8 +92,8 @@ namespace LeadsHub.Core.Bac
                 string leadStageIds = string.Join(", ", leadStageList.Select(s => s.Id).ToList());
 
                 FilterRequest filterRequest = new();
-                filterRequest.AddFilter(nameof(LeadStage.Id), AdaptiveKitCore.Enums.FilterOperatorEnum.In, leadStageIds);
-                filterRequest.AddFilter(nameof(LeadStage.PipelineStageId), AdaptiveKitCore.Enums.FilterOperatorEnum.NotEquals, stageId);
+                filterRequest.AddFilter(nameof(LeadStage.Id), FilterOperatorEnum.In, leadStageIds);
+                filterRequest.AddFilter(nameof(LeadStage.PipelineStageId), FilterOperatorEnum.NotEquals, stageId);
 
                 var response = await FetchLeadStageByRequest(filterRequest);
 

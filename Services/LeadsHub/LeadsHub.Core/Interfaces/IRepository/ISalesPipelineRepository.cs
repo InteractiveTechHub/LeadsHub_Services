@@ -8,6 +8,8 @@ namespace LeadsHub.Core.Interfaces.IRepository
 {
     public interface ISalesPipelineRepository
     {
+        Task<SimpleResponse<LeadStage>> CreateLeadStageAsync(LeadStage leadStage);
+
         Task<SimpleResponse<SalesPipeline>> CreatePipelineAsync(SalesPipeline salesPipeline);
 
         Task<LeadStageResponse> FetchLeadStageByRequest(FilterRequest filterRequest);
@@ -15,6 +17,8 @@ namespace LeadsHub.Core.Interfaces.IRepository
         Task<SimpleResponse<SalesPipeline>> FetchPipelineByIdAsync(long pipelineId);
 
         Task<SalesPipelineResponse> FetchPipelinesByRequestAsync(FilterRequest filterRequest);
+
+        Task<PipelineStageResponse> FetchPipelineStageByPipeIdAsync(long salesPipelineId);
 
         Task<ModelResponse> UpdatePipelinesAsync(List<SalesPipeline> salesPipelineList);
 

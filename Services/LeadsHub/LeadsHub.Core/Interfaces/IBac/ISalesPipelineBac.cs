@@ -8,6 +8,8 @@ namespace LeadsHub.Core.Interfaces.IBac
 {
     public interface ISalesPipelineBac
     {
+        Task<SimpleResponse<LeadStage>> CreateLeadStageAsync(Lead lead);
+
         Task<SimpleResponse<SalesPipeline>> CreatePipelineAsync(SalesPipeline salesPipeline);
 
         Task<LeadStageResponse> FetchLeadStageByRequest(FilterRequest filterRequest);

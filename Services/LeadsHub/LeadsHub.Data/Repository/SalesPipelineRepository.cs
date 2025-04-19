@@ -88,6 +88,47 @@ namespace LeadsHub.Data.Repository
             return response;
         }
 
+        public async Task<SimpleResponse<LeadStage>> CreateLeadStageAsync(LeadStage leadStage)
+        {
+            SimpleResponse<LeadStage> response = new();
+
+            const string shiftPositionsCommand = "UPDATE \"LeadStage\" SET \"Position\" = \"Position\" + 1 WHERE \"PipelineStageId\" = @PipelineStageId;";
+
+            const string createCommand = "INSERT INTO \"LeadStage\" (\"LeadId\", \"PipelineStageId\", \"Position\") VALUES (@LeadId, @PipelineStageId, 0) RETURNING \"Id\"; ";
+
+            try
+            {
+                using var connection = new NpgsqlConnection(SD.ConnectString);
+                await connection.OpenAsync();
+
+                using var transaction = await connection.BeginTransactionAsync();
+
+                await connection.ExecuteAsync(shiftPositionsCommand, leadStage, transaction);
+
+                long leadStageId = await connection.ExecuteScalarAsync<long>(createCommand, leadStage, transaction);
+                if (leadStageId == 0)
+                {
+                    response.AddErrorMessage("Not created");
+
+                    return response;
+                }
+
+                leadStage.Id = leadStageId;
+                leadStage.Position = 0;
+                response.Model = leadStage;
+
+                response.AddSuccessMessage("Susscessfully created");
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage(ex.Message);
+            }
+
+            return response;
+        }
+
         public async Task<LeadStageResponse> FetchLeadStageByRequest(FilterRequest filterRequest)
         {
             LeadStageResponse response = new();
@@ -226,6 +267,41 @@ namespace LeadsHub.Data.Repository
                 }
 
                 response.ResponseData.AddRange(result);
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage(ex.Message);
+            }
+
+            return response;
+        }
+
+        public async Task<PipelineStageResponse> FetchPipelineStageByPipeIdAsync(long salesPipelineId)
+        {
+            PipelineStageResponse response = new();
+
+            string selectStage = "SELECT * " +
+                "FROM \"PipelineStage\" ps " +
+                "LEFT JOIN \"LeadStage\" ls ON ls.\"PipelineStageId\" = ps.\"Id\" " +
+                "WHERE \"SalesPipelineId\" = @SalesPipelineId ";
+
+            try
+            {
+                using var connection = new NpgsqlConnection(SD.ConnectString);
+                await connection.OpenAsync();
+
+                IEnumerable<PipelineStage> result = await connection.QueryAsync<PipelineStage, LeadStage, PipelineStage>(selectStage, 
+                    (pipeStage, leadStage) => 
+                    {
+                        if (leadStage is not null)
+                        {
+                            pipeStage.Leads.Add(leadStage);
+                        }                       
+
+                        return pipeStage;
+                    }, param: new { salesPipelineId }, splitOn: "Id");
+
+                response.ResponseData = [.. result];
             }
             catch (Exception ex)
             {
