@@ -3,6 +3,7 @@ using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Enum;
+using LeadsHub.Core.Extensions;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
@@ -84,7 +85,7 @@ namespace LeadsHub.Core.Bac
             SendMessagePayLoad sendMessagePayLoad = new()
             {
                 RecepientType = "individual",
-                To = leadResponse.Model!.Contact.PhoneNumber,
+                To = leadResponse.Model!.Contact.PhoneNumber.RemovePhoneFormat(),
             };
 
             // text

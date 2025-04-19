@@ -67,7 +67,7 @@ namespace LeadsHub.Core.Bac
             {
                 Timeline timeline = new();
 
-                lead.Contact.PhoneNumber = message.From;
+                lead.Contact.PhoneNumber = $"+{message.From}";
                 timeline.MessageId = message.Id;
                 timeline.Status = MessageStatus.Delivered;
 

@@ -4,10 +4,12 @@ using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Dtos;
 using LeadsHub.Core.Enum;
+using LeadsHub.Core.Extensions;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
+using PhoneNumbers;
 
 namespace LeadsHub.Core.Bac
 {
@@ -26,7 +28,18 @@ namespace LeadsHub.Core.Bac
 
         public async Task<LeadCardResponse> FetchCardsByRequestAsync(FilterRequest filterRequest)
         {
-            return await _managerRepository.FetchCardsByRequestAsync(filterRequest);
+            var response = await _managerRepository.FetchCardsByRequestAsync(filterRequest);
+            if (response.HasAnyErrorMessage)
+            {
+                return response;
+            }
+
+            response.ResponseData.ForEach((card) =>
+            {
+                card.PhoneNumber = card.PhoneNumber.FormatPhoneNumber();
+            });
+
+            return response;
         }
 
         public async Task<BaseResponse<TemplatesPerType>> FetchTemplatesAsync(long leadId)
