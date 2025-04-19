@@ -5,7 +5,10 @@ namespace LeadsHub.Core.Models
     {
         public string Title { get; set; } = string.Empty;
 
-        public int StageOrder { get; set; }
+        /// <summary>
+        /// Position/order of the stage (columns) displayed
+        /// </summary>
+        public int Position { get; set; }
 
         public long SalesPipelineId { get; set; }
 

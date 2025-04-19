@@ -20,7 +20,7 @@ namespace LeadsHub.Data.Repository
                 "sp.\"ConsultantId\", " +
                 "stg.\"Id\", " +
                 "stg.\"Title\", " +
-                "stg.\"StageOrder\"," +
+                "stg.\"Position\"," +
                 "ltg.\"Id\", " +
                 "ltg.\"LeadId\", " +
                 "ltg.\"PipelineStageId\", " +
@@ -345,7 +345,7 @@ namespace LeadsHub.Data.Repository
         {
             ModelResponse response = new();
 
-            string updateCommand = "UPDATE \"PipelineStage\" SET \"Title\"=@Title, \"StageOrder\"=@StageOrder WHERE \"Id\" = @Id;";
+            string updateCommand = "UPDATE \"PipelineStage\" SET \"Title\"=@Title, \"Position\"=@Position WHERE \"Id\" = @Id;";
 
             try
             {
@@ -403,7 +403,7 @@ namespace LeadsHub.Data.Repository
 
         private async Task<SalesPipeline> CreatePipelineStageAsync(SalesPipeline salesPipeline, NpgsqlConnection connection, NpgsqlTransaction transaction)
         {
-            const string createCommand = "INSERT INTO \"PipelineStage\" (\"SalesPipelineId\", \"Title\", \"StageOrder\") VALUES (@SalesPipelineId, @Title, @StageOrder);";
+            const string createCommand = "INSERT INTO \"PipelineStage\" (\"SalesPipelineId\", \"Title\", \"Position\") VALUES (@SalesPipelineId, @Title, @Position);";
 
             var result = await connection.ExecuteAsync(createCommand, salesPipeline.Stages, transaction);
 

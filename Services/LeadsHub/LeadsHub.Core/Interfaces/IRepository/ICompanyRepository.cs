@@ -8,7 +8,7 @@ namespace LeadsHub.Core.Interfaces.IRepository
 {
     public interface ICompanyRepository
     {
-        Task<ModelResponse> CreateCompanyAsync(Company company);
+        Task<SimpleResponse<Company>> CreateCompanyAsync(Company company);
 
         /// <summary>
         /// Fetch all companies using pagination

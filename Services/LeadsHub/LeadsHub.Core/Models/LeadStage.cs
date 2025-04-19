@@ -6,6 +6,9 @@
 
         public long PipelineStageId { get; set; } = default!;
 
+        /// <summary>
+        /// Position/Order displayed within the stage (column)
+        /// </summary>
         public int Position { get; set; } = 0;
 
         public DateTimeOffset MovedAt { get; set; }

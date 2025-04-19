@@ -30,7 +30,7 @@ namespace LeadsHub.Core.Bac
 
             PipelineStageResponse stageResponse = await _salesPipelineRepository.FetchPipelineStageByPipeIdAsync(pipelineId);
 
-            PipelineStage? stage = stageResponse.ResponseData.OrderBy(r => r.StageOrder).FirstOrDefault();
+            PipelineStage? stage = stageResponse.ResponseData.OrderBy(r => r.Position).FirstOrDefault();
             if (stage is null)
             {
                 // TODO: log error
@@ -55,14 +55,17 @@ namespace LeadsHub.Core.Bac
         public async Task<SimpleResponse<SalesPipeline>> CreatePipelineAsync(SalesPipeline salesPipeline)
         {
             if (string.IsNullOrWhiteSpace(salesPipeline.Name))
+            {
                 salesPipeline.Name = "Funil Principal";
+                salesPipeline.Position = 0;
+            }               
 
             ICollection<PipelineStage> stageList = BuildDefaultStage();
 
             salesPipeline.Stages.AddRange(stageList);
 
             return await _salesPipelineRepository.CreatePipelineAsync(salesPipeline);
-        }
+        }  
 
         public async Task<SimpleResponse<SalesPipeline>> FetchPipelineByIdAsync(long pipelineId)
         {
@@ -125,21 +128,21 @@ namespace LeadsHub.Core.Bac
                 new()
                 {
                     Title = "Novo Lead",
-                    StageOrder = 0,
+                    Position = 0,
                 },
                 new() {
                     Title = "Em negociação",
-                    StageOrder = 1,
+                    Position = 1,
                 },
                 new()
                 {
                     Title = "Em agendamento",
-                    StageOrder = 2
+                    Position = 2
                 },
                 new()
                 {
                     Title = "Finalizado",
-                    StageOrder = 3
+                    Position = 3
                 }
             ];
 

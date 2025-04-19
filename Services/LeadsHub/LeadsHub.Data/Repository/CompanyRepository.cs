@@ -23,9 +23,9 @@ namespace LeadsHub.Data.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<ModelResponse> CreateCompanyAsync(Company company)
+        public async Task<SimpleResponse<Company>> CreateCompanyAsync(Company company)
         {
-            ModelResponse response = new();
+            SimpleResponse<Company> response = new();
 
             _dbConnection.Open();
             using var transaction = _dbConnection.BeginTransaction();
@@ -43,6 +43,8 @@ namespace LeadsHub.Data.Repository
                     return response;
                 }
 
+                response.Model.Id = companyId;
+
                 // Persists the address
                 company.Address.CompanyId = companyId;
 
@@ -51,9 +53,11 @@ namespace LeadsHub.Data.Repository
                 int result = await _dbConnection.ExecuteAsync(Addressinsert, company.Address, transaction);
                 if (result == 0) 
                 {
-                    response.AddErrorMessage("AddressNotSaved", "002");
                     transaction.Rollback();
-                }
+                    response.AddErrorMessage("AddressNotSaved", "002");
+
+                    return response;
+                }                
 
                 transaction.Commit();
 
