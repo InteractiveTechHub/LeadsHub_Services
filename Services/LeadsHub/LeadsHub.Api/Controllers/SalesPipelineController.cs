@@ -1,4 +1,5 @@
-﻿using LeadsHub.Core.Interfaces.IBac;
+﻿using AdaptiveKitCore.Requests;
+using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,51 +13,33 @@ namespace LeadsHub.Api.Controllers
             _salesPipelineBac = salesPipelineBac;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> FetchSalesPipelinesAsync()
+        [HttpPost]
+        public async Task<IActionResult> CreatePipelineAsync([FromBody] SalesPipeline salesPipeline)
         {
-            int id = 1; // Simulação de ID do pipeline
-
-            /*var pipelines = new List<SalesPipeline>
+            var response = await _salesPipelineBac.CreatePipelineAsync(salesPipeline);
+            if (response.HasAnyErrorMessage)
             {
-                new SalesPipeline
-                {
-                    Id = 1,
-                    Name = "Real Estate",
-                    Stages = new List<PipelineStage>
-                    {
-                        new PipelineStage
-                        {
-                            Id = 1,
-                            Title = "New",
-                            StageOrder = 1,
-                            PipelineId = 1,
-                            Leads = new List<LeadStage>
-                            {
-                                new LeadStage { LeadId = 1, LeadName = "John Doe", PhoneNumber = "1234", Position = 1, StageId = 1 },
-                                new LeadStage { LeadId = 2, LeadName = "Jane Smith", PhoneNumber = "5678", Position = 2, StageId = 1 }
-                            }
-                        },
-                        new PipelineStage
-                        {
-                            Id = 2,
-                            Title = "Contacted",
-                            StageOrder = 2,
-                            PipelineId = 1,
-                            Leads = new List<LeadStage>
-                            {
-                                new LeadStage { LeadId = 3, LeadName = "Maria Green", PhoneNumber = "9999", Position = 1, StageId = 2 }
-                            }
-                        }
-                    }
-                }
-            };
+                return BadRequest(response);
+            }
 
-            var pipeline = pipelines.FirstOrDefault(p => p.Id == id);
+            return Ok(response);
+        }
 
-            if (pipeline == null)
-                return NotFound();*/
+        [HttpPost("fetch-pipelines")]
+        public async Task<IActionResult> FetchPipelinesByRequestAsync([FromBody] FilterRequest filterRequest)
+        {
+            var response = await _salesPipelineBac.FetchPipelinesByRequestAsync(filterRequest);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
 
+            return Ok(response);
+        }
+
+        [HttpGet("{id:long}")]
+        public async Task<IActionResult> FetchSalesPipelineByIdAsync(long id)
+        {
             var response = await _salesPipelineBac.FetchPipelineByIdAsync(id);
             if (response.HasAnyErrorMessage)
                 return BadRequest(response);
@@ -66,6 +49,42 @@ namespace LeadsHub.Api.Controllers
             foreach (var stage in response.Model.Stages)
             {
                 stage.Leads = stage.Leads.OrderBy(l => l.Position).ToList();
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdatePipelinesAsync([FromBody] List<SalesPipeline> salesPipelineList)
+        {
+            var response = await _salesPipelineBac.UpdatePipelinesAsync(salesPipelineList);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPut("stage")]
+        public async Task<IActionResult> UpdatePipelineStageAsync([FromBody] PipelineStage stage)
+        {
+            var response = await _salesPipelineBac.UpdatePipelineStageAsync(stage);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPut("leadStage")]
+        public async Task<IActionResult> UpdateLeadStageAsync([FromBody] List<LeadStage> leadStage, [FromQuery] long? stageId)
+        {
+            var response = await _salesPipelineBac.UpdateLeadStageAsync(leadStage, stageId);
+            if (response.HasAnyErrorMessage)
+            {
+                return BadRequest(response);
             }
 
             return Ok(response);

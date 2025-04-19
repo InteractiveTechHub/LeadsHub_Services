@@ -105,11 +105,12 @@ namespace LeadsHub.Data.Repository
 
                 using var connection = new NpgsqlConnection(SD.ConnectString);
                 await connection.OpenAsync();
+
                 using var transaction = await connection.BeginTransactionAsync();
 
                 var result = await connection.ExecuteScalarAsync(updateQuery, consultant, transaction);
 
-               transaction.Commit();
+               await transaction.CommitAsync();
             }
             catch (Exception ex)
             {

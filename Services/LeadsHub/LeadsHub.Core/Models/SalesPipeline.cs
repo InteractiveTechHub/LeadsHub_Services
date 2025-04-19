@@ -9,6 +9,6 @@ namespace LeadsHub.Core.Models
 
         public string Name { get; set; } = string.Empty;
 
-        public ICollection<PipelineStage> Stages { get; set; } = [];
+        public List<PipelineStage> Stages { get; set; } = [];
     }
 }

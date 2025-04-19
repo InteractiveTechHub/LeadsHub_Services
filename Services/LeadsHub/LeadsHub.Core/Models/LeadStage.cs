@@ -8,6 +8,8 @@
 
         public int Position { get; set; }
 
+        public DateTimeOffset MovedAt { get; set; }
+
         public LeadCard LeadCard { get; set; } = new();
     }
 }

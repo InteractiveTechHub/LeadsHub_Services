@@ -34,8 +34,6 @@ namespace LeadsHub.Data.Repository
             {
                 string insert = "INSERT INTO \"Company\" (\"BrandName\", \"LegalName\", \"Email\", \"Enabled\", \"IdentificationNumber\", \"PhoneNumber\") VALUES (@BrandName, @LegalName, @Email, @Enabled, @IdentificationNumber, @PhoneNumber) RETURNING \"Id\"";
 
-                          
-
                 int companyId = await _dbConnection.ExecuteScalarAsync<int>(insert, company, transaction);
 
                 if (companyId == 0) 
@@ -127,7 +125,9 @@ namespace LeadsHub.Data.Repository
         {
             ModelResponse response = new();
             string updateCommand = "UPDATE \"Company\" SET \"BrandName\" = @BrandName, \"LegalName\" = @LegalName, \"Email\" = @Email, \"Enabled\" = @Enabled, \"IdentificationNumber\" = @IdentificationNumber, \"PhoneNumber\" = @PhoneNumber WHERE \"Id\" = @Id";
+            
             _dbConnection.Open();
+            
             using var transaction = _dbConnection.BeginTransaction();
 
             try

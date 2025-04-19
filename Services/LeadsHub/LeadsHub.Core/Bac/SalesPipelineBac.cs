@@ -1,8 +1,10 @@
 ﻿
+using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
+using LeadsHub.Core.Responses;
 
 namespace LeadsHub.Core.Bac
 {
@@ -14,9 +16,98 @@ namespace LeadsHub.Core.Bac
             _salesPipelineRepository = salesPipelineRepository; 
         }
 
+        public async Task<SimpleResponse<SalesPipeline>> CreatePipelineAsync(SalesPipeline salesPipeline)
+        {
+            if (string.IsNullOrWhiteSpace(salesPipeline.Name))
+                salesPipeline.Name = "Funil Principal";
+
+            ICollection<PipelineStage> stageList = BuildDefaultStage();
+
+            salesPipeline.Stages.AddRange(stageList);
+
+            return await _salesPipelineRepository.CreatePipelineAsync(salesPipeline);
+        }
+
         public async Task<SimpleResponse<SalesPipeline>> FetchPipelineByIdAsync(long pipelineId)
         {
             return await _salesPipelineRepository.FetchPipelineByIdAsync(pipelineId);
+        }
+
+        public async Task<SalesPipelineResponse> FetchPipelinesByRequestAsync(FilterRequest filterRequest)
+        {
+            return await _salesPipelineRepository.FetchPipelinesByRequestAsync(filterRequest);
+        }
+
+        public async Task<ModelResponse> UpdatePipelinesAsync(List<SalesPipeline> salesPipelineList)
+        {
+            return await _salesPipelineRepository.UpdatePipelinesAsync(salesPipelineList);
+        }
+
+        public async Task<ModelResponse> UpdatePipelineStageAsync(PipelineStage stage)
+        {
+            return await _salesPipelineRepository.UpdatePipelineStageAsync(stage);
+        }
+
+        public async Task<ModelResponse> UpdateLeadStageAsync(List<LeadStage> leadStageList, long? stageId)
+        {
+            // TODO: Fetch LeadStage that is not in the same PipelineStageId
+            if (stageId is not null)
+            {
+                string leadStageIds = string.Join(", ", leadStageList.Select(s => s.Id).ToList());
+
+                FilterRequest filterRequest = new();
+                filterRequest.AddFilter(nameof(LeadStage.Id), AdaptiveKitCore.Enums.FilterOperatorEnum.In, leadStageIds);
+                filterRequest.AddFilter(nameof(LeadStage.PipelineStageId), AdaptiveKitCore.Enums.FilterOperatorEnum.NotEquals, stageId);
+
+                var response = await FetchLeadStageByRequest(filterRequest);
+
+                LeadStage? previousLeadStage = response.ResponseData.FirstOrDefault();
+                if (previousLeadStage is not null)
+                {
+                    leadStageList.ForEach(stage =>
+                    {
+                        if (stage.Id == previousLeadStage.Id)
+                        {
+                            stage.MovedAt = DateTimeOffset.UtcNow;
+                        }
+                    });
+                }
+            }   
+
+            return await _salesPipelineRepository.UpdateLeadStageAsync(leadStageList);
+        }
+
+        public async Task<LeadStageResponse> FetchLeadStageByRequest(FilterRequest filterRequest)
+        {
+            return await _salesPipelineRepository.FetchLeadStageByRequest(filterRequest);
+        }
+
+        private ICollection<PipelineStage> BuildDefaultStage()
+        {
+            ICollection<PipelineStage> stageList =
+            [
+                new()
+                {
+                    Title = "Novo Lead",
+                    StageOrder = 0,
+                },
+                new() {
+                    Title = "Em negociação",
+                    StageOrder = 1,
+                },
+                new()
+                {
+                    Title = "Em agendamento",
+                    StageOrder = 2
+                },
+                new()
+                {
+                    Title = "Finalizado",
+                    StageOrder = 3
+                }
+            ];
+
+            return stageList;
         }
     }
 }

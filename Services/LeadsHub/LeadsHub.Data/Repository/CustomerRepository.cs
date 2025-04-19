@@ -25,9 +25,13 @@ namespace LeadsHub.Data.Repository
                 using var connection = new NpgsqlConnection(SD.ConnectString);
                 await connection.OpenAsync();
 
-                long customerId = await connection.ExecuteScalarAsync<long>(query, new { contact.Email, contact.CPF, contact.PhoneNumber });
+                using var transaction = await connection.BeginTransactionAsync();
+
+                long customerId = await connection.ExecuteScalarAsync<long>(query, new { contact.Email, contact.CPF, contact.PhoneNumber }, transaction);
 
                 response.Model = customerId;
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
@@ -60,7 +64,7 @@ namespace LeadsHub.Data.Repository
 
                 response.Model = customerId;
 
-                transaction.Commit();
+                await transaction.CommitAsync();
             } 
             catch (Exception ex)
             {

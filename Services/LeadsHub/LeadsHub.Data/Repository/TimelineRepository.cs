@@ -216,12 +216,17 @@ namespace LeadsHub.Data.Repository
             try
             {
                 using var connection = new NpgsqlConnection(SD.ConnectString);
+                await connection.OpenAsync();
 
-                var result = await connection.ExecuteAsync(updateCommand, timeline);
+                using var transaction = await connection.BeginTransactionAsync();
+
+                var result = await connection.ExecuteAsync(updateCommand, timeline, transaction);
                 if (result == 0)
                 {
                     // Not updated
                 }
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {

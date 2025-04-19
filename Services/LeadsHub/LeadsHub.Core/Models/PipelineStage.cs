@@ -7,7 +7,7 @@ namespace LeadsHub.Core.Models
 
         public int StageOrder { get; set; }
 
-        public int PipelineId { get; set; }
+        public long SalesPipelineId { get; set; }
 
         public ICollection<LeadStage> Leads { get; set; } = [];
     }
