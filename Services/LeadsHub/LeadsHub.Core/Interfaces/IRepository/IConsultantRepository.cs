@@ -2,6 +2,7 @@
 
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
 
@@ -13,7 +14,7 @@ namespace LeadsHub.Core.Interfaces.IRepository
 
         Task<ConsultantResponse> FetchConsultantsByRequestAsync(FilterRequest filterRequest);
 
-        Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId);
+        Task<SimpleResponse<UserContext>> FetchConsultantByUserIdAsync(string userId);
 
         Task<ModelResponse> UpdateConsultantAsync(Consultant consultant);
     }

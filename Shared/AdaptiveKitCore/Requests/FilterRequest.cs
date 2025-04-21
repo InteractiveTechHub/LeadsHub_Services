@@ -41,5 +41,13 @@ namespace AdaptiveKitCore.Requests
                 AliasName = alias
             });
         }
+
+        public void AddFilterDescriptors(IList<FilterDescriptor> filterDescriptors)
+        {
+            foreach (var filter in filterDescriptors)
+            {
+                FilterDescriptors.Add(filter);
+            }
+        }
     }
 }

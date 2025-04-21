@@ -4,6 +4,7 @@ using AdaptiveKitCore.Responses;
 using AdaptiveKitCore.Responses.Interfaces;
 using Dapper;
 using LeadsHub.Core.Extentions;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Identity.Models;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
@@ -158,15 +159,21 @@ namespace LeadsHub.Data.Repository
             return response;
         }
 
-        public async Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId)
+        public async Task<SimpleResponse<UserContext>> FetchConsultantByUserIdAsync(string userId)
         {
-            SimpleResponse<Consultant> response = new();
+            SimpleResponse<UserContext> response = new();
 
             try
             {
-                string querySql = $"SELECT * FROM \"Consultant\" WHERE \"IdentityId\" = '{userId}'";
+                string querySql = "SELECT " +
+                                    "c.\"Id\" AS ConsultantId, " +
+                                    "array_agg(cp.\"CompanyId\") AS CompanyIds " +
+                                  "FROM \"Consultant\" c " +
+                                  "JOIN \"ConsultantCompany\" cp ON cp.\"ConsultantId\" = c.\"Id\" " +
+                                  "WHERE c.\"IdentityId\" = @UserId " +
+                                  "GROUP BY c.\"Id\" ";
 
-                Consultant? consultant = await _dbConnection.QueryFirstAsync<Consultant>(querySql);
+                UserContext? consultant = await _dbConnection.QueryFirstAsync<UserContext>(querySql, new { userId });
 
                 response.Model = consultant;
             }

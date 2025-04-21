@@ -2,6 +2,7 @@
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
@@ -23,7 +24,7 @@ namespace LeadsHub.Core.Bac
             return await _consultantRepository.CreatesConsultantAsync(consultant);
         }
 
-        public async Task<SimpleResponse<Consultant>> FetchConsultantByUserIdAsync(string userId)
+        public async Task<SimpleResponse<UserContext>> FetchConsultantByUserIdAsync(string userId)
         {
             var response = await _consultantRepository.FetchConsultantByUserIdAsync(userId);
 

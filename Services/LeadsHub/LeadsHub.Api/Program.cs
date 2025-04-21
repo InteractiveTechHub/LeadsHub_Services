@@ -3,6 +3,7 @@ using InteractiveLeads.Core.Enums;
 using LeadsHub.Api.Services;
 using LeadsHub.Core.Bac;
 using LeadsHub.Core.Hubs;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Identity.Models;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
@@ -116,6 +117,10 @@ builder.Services.AddSwaggerGen();
 
 // RabbitMQ Broker
 //builder.Services.AddHostedService<MessageConsumer>();
+
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 
 // Services
 builder.Services.AddScoped<JwtService>();

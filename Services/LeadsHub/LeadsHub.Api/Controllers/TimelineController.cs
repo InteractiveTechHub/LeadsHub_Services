@@ -48,7 +48,7 @@ namespace LeadsHub.Api.Controllers
                 return BadRequest(response);
             }
 
-            timeline.ConsultantId = response.Model.Id;
+            timeline.ConsultantId = response.Model.ConsultantId;
 
             SimpleResponse <Timeline> respose = await _timelineBac.RegisterTimelineAsync(timeline);
             if (respose.HasAnyErrorMessage)

@@ -1,4 +1,7 @@
-﻿using AdaptiveKitCore.Requests;
+﻿using AdaptiveKitCore.Enums;
+using AdaptiveKitCore.Requests;
+using InteractiveLeads.Core.Enums;
+using LeadsHub.Api.Services;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +11,12 @@ namespace LeadsHub.Api.Controllers
     public class SalesPipelineController : BaseController
     {
         private readonly ISalesPipelineBac _salesPipelineBac;
-        public SalesPipelineController(ISalesPipelineBac salesPipelineBac)
+        private readonly IUserContextService _userContextService;
+
+        public SalesPipelineController(ISalesPipelineBac salesPipelineBac, IUserContextService userContextService)
         {
             _salesPipelineBac = salesPipelineBac;
+            _userContextService = userContextService;
         }
 
         [HttpPost]
@@ -28,6 +34,9 @@ namespace LeadsHub.Api.Controllers
         [HttpPost("fetch-pipelines")]
         public async Task<IActionResult> FetchPipelinesByRequestAsync([FromBody] FilterRequest filterRequest)
         {
+            var user = await _userContextService.GetUserContextAsync();
+            filterRequest.AddFilterDescriptors(filterRequest.FilterDescriptors);
+
             var response = await _salesPipelineBac.FetchPipelinesByRequestAsync(filterRequest);
             if (response.HasAnyErrorMessage)
             {
