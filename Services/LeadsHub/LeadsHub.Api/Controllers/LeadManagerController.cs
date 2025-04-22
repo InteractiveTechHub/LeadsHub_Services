@@ -1,8 +1,11 @@
 ﻿
 using AdaptiveKitCore.Requests;
+using LeadsHub.Api.Services;
 using LeadsHub.Core.Dtos;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
+using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +13,40 @@ namespace LeadsHub.Api.Controllers
 {    public class LeadManagerController : BaseController
     {
         private readonly ILeadManagerBac _leadManagerBac;
-        public LeadManagerController(ILeadManagerBac leadManagerBac)
+        private readonly IUserContextService _userContextService;
+        public LeadManagerController(ILeadManagerBac leadManagerBac, IUserContextService userContextService)
         {
             _leadManagerBac = leadManagerBac;
+            _userContextService = userContextService;
         }
 
         [HttpPost("leadcards")]
-        public async Task<IActionResult> FetchLeadCardsByRequestAsync(FilterRequest filterRequest)
+        public async Task<IActionResult> FetchLeadCardsByRequestAsync(ManagerFilterRequest request)
         {
-            filterRequest.AddSortExpressionDescending("CreatedAt");
+            UserContext userContext = await _userContextService.GetUserContextAsync();
 
-           LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(filterRequest);
+            FilterRequest filterRequest = new();
+
+            if (request.IsLeadCreatedAtDesc)
+            {
+                filterRequest.AddSortExpressionDescending(nameof(Lead.CreatedAt), "ld");
+            }
+            else if (request.IsLeadCreatedAtAsc)
+            {
+                filterRequest.AddSortExpressionAscending(nameof(Lead.CreatedAt), "ld");
+            }
+            else if (request.IsInteractionDesc)
+            {
+                filterRequest.AddSortExpressionDescending(nameof(LastMessageSet.LastMessageDate), "lm");
+            }
+            else if (request.IsInteractionAsc)
+            {
+                filterRequest.AddSortExpressionAscending(nameof(LastMessageSet.LastMessageDate), "lm");
+            }
+
+            userContext.FilterRequest.ShorthandSortExpressions = filterRequest.ShorthandSortExpressions;
+
+            LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(userContext.FilterRequest);
             if (response.HasAnyErrorMessage)
             {
                 return BadRequest(response);

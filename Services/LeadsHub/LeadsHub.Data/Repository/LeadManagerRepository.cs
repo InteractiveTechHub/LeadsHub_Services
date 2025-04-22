@@ -17,6 +17,7 @@ namespace LeadsHub.Data.Repository
                                                     + "ld.\"Channel\", "
                                                     + "ld.\"Phase\", "
                                                     + "ld.\"Status\", "
+                                                    + "ld.\"SaleNote\", "
                                                     + "ld.\"CreatedAt\" AS CreatedAt, "
                                                     + "c.\"Id\" As ConsultantId, "
                                                     + "c.\"IdentityId\" AS UserIdentityId, "
@@ -40,6 +41,7 @@ namespace LeadsHub.Data.Repository
             + "ld.\"Channel\", "
             + "ld.\"Phase\", "
             + "ld.\"Status\", "
+            + "ld.\"SaleNote\", "
             + "ld.\"CreatedAt\", "
             + "c.\"Id\", "
             + "c.\"IdentityId\", "
@@ -76,7 +78,7 @@ namespace LeadsHub.Data.Repository
                 string sortExpression = string.Empty;
                 foreach (var sort in filterRequest.SortExpressions)
                 {
-                    sortExpression = $"ORDER BY {sort.PropertyName} {sort.SortDirection}";
+                    sortExpression = $"ORDER BY {sort.ColumnAlias}.\"{sort.PropertyName}\" {sort.SortDirection}";
                 }
 
                 string offset = "";

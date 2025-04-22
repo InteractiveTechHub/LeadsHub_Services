@@ -36,13 +36,13 @@ namespace AdaptiveKitCore.Requests
 
         public List<string> ShorthandSortExpressions { get; set; } = new();
 
-        public InquiryRequest AddSortExpressionAscending(string propertyName, string tableAlias = "", string columnAlias = "")
+        public InquiryRequest AddSortExpressionAscending(string propertyName, string columnAlias = "", string tableAlias = "")
         {
             ShorthandSortExpressions.Add("+" + propertyName + "-" + tableAlias + "-" + columnAlias);
             return this;
         }
 
-        public InquiryRequest AddSortExpressionDescending(string propertyName, string tableAlias = "", string columnAlias = "")
+        public InquiryRequest AddSortExpressionDescending(string propertyName, string columnAlias = "", string tableAlias = "")
         {
             ShorthandSortExpressions.Add("-" + propertyName + "-" + tableAlias + "-" + columnAlias);
             return this;
