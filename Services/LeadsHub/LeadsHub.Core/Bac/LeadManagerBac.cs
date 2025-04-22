@@ -121,5 +121,22 @@ namespace LeadsHub.Core.Bac
 
             return response;
         }
+
+        public async Task<SimpleResponse<Lead?>> CloseLeadAsync(LeadCard leadCard)
+        {
+            SimpleResponse<Lead?> response = await _leadRepository.FetchLeadByIdAsync(leadCard.LeadId);
+            if (response.HasAnyErrorMessage || response.Model is null)
+            {
+                return response;
+            }
+
+            response.Model!.Status = leadCard.Status;
+            response.Model!.Phase = LeadPhase.Closed;
+            response.Model!.SaleNote = leadCard.SaleNote;
+
+            response = await _leadRepository.UpdateLeadAsync(response.Model);
+
+            return response;
+        }
     }
 }

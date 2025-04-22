@@ -2,6 +2,7 @@
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Extensions;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
@@ -69,7 +70,20 @@ namespace LeadsHub.Core.Bac
 
         public async Task<SimpleResponse<SalesPipeline>> FetchPipelineByIdAsync(long pipelineId)
         {
-            return await _salesPipelineRepository.FetchPipelineByIdAsync(pipelineId);
+            var response = await _salesPipelineRepository.FetchPipelineByIdAsync(pipelineId);
+            if (response.HasAnyErrorMessage)
+            {
+                return response;
+            }
+
+            response.Model.Stages = [.. response.Model.Stages.OrderBy(s => s.Position)];
+            foreach (PipelineStage stage in response.Model.Stages)
+            {
+                stage.Leads = [.. stage.Leads.OrderBy(l => l.Position)];
+                stage.Leads.ForEach(ld => ld.LeadCard.PhoneNumber = ld.LeadCard.PhoneNumber.FormatPhoneNumber());
+            }
+
+            return response;
         }
 
         public async Task<SalesPipelineResponse> FetchPipelinesByRequestAsync(FilterRequest filterRequest)

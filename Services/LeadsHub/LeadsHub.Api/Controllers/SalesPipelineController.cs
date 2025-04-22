@@ -53,12 +53,6 @@ namespace LeadsHub.Api.Controllers
             if (response.HasAnyErrorMessage)
                 return BadRequest(response);
 
-            response.Model.Stages = [.. response.Model.Stages.OrderBy(s => s.Position)];
-            foreach (var stage in response.Model.Stages)
-            {
-                stage.Leads = [.. stage.Leads.OrderBy(l => l.Position)];
-            }
-
             return Ok(response);
         }
 

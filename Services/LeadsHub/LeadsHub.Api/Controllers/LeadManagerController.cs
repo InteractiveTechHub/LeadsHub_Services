@@ -40,5 +40,17 @@ namespace LeadsHub.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("close-lead")]
+        public async Task<IActionResult> CloseLeadAsync(LeadCard leadCard)
+        {
+            var response = await _leadManagerBac.CloseLeadAsync(leadCard);
+            if (response.HasAnyErrorMessage) 
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

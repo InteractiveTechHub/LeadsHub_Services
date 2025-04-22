@@ -24,7 +24,9 @@ namespace LeadsHub.Core.Models
 
         public LeadPhase Phase { get; set; } = LeadPhase.New;
 
-        public int Status { get; set; } = 1; // This will be enumerator
+        public LeadStatus Status { get; set; } = LeadStatus.Active;
+
+        public string SaleNote { get; set; } = string.Empty;
 
         public Consultant? Consultant { get; set; }
 

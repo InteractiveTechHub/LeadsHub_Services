@@ -6,6 +6,6 @@ namespace LeadsHub.Core.Enum
         New = 1,
         InProgress = 2,
         Appointment = 3,
-        Closed = 6,
+        Closed = 4,
     }
 }

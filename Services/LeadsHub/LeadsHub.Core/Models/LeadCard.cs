@@ -40,8 +40,6 @@ namespace LeadsHub.Core.Models
         /// </summary>
         public string LeadName { get; set; } = string.Empty;
 
-        public LeadPhase LeadPhase { get; set; }
-
         public string LastMessage { get; set; } = string.Empty;
 
         /// <summary>
@@ -59,10 +57,14 @@ namespace LeadsHub.Core.Models
         /// </summary>
         public string Email { get; set; } = string.Empty;
 
+        public string SaleNote { get; set; } = string.Empty;
+
         /// <summary>
         /// The status of the lead
         /// </summary>
-        public string Status { get; private set; } = string.Empty;
+        public LeadStatus Status { get; set; }
+
+        public LeadPhase Phase { get; set; }
 
         public int TimelineId { get; set; }
 

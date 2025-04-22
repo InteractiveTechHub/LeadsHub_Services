@@ -138,6 +138,14 @@ namespace LeadsHub.Core.Bac
                 // TODO: Should log the whatsapp exceptions and errors.
             }
 
+            // If it is new and message was sent and lead is new.
+            if (!result.HasAnyErrorMessage && leadResponse.Model.Phase.Equals(LeadPhase.New))
+            {
+                leadResponse.Model.Phase = LeadPhase.InProgress;
+
+                await _leadRepository.UpdateLeadAsync(leadResponse.Model);
+            }
+
             return response;
         }
 

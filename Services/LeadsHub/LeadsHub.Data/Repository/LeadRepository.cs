@@ -5,6 +5,7 @@ using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Utility;
 using Npgsql;
+using System.Xml;
 
 namespace LeadsHub.Data.Repository
 {
@@ -47,6 +48,39 @@ namespace LeadsHub.Data.Repository
                     splitOn: "Id");
 
                 response.Model = result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage(ex.Message);
+            }
+
+            return response;
+        }
+
+        public async Task<SimpleResponse<Lead?>> UpdateLeadAsync(Lead lead)
+        {
+            SimpleResponse<Lead> response = new();
+
+            const string updateCommand = "UPDATE \"Lead\" SET \"ConsultantId\" = @ConsultantId, \"Phase\"=@Phase, \"Status\"=@Status, \"SaleNote\"=@SaleNote, \"UpdatedAt\"=now() WHERE \"Id\" = @Id;";
+
+            try
+            {
+                using var connection = new NpgsqlConnection(SD.ConnectString);
+                await connection.OpenAsync();
+
+                using var transaction = await connection.BeginTransactionAsync();
+
+                int result = await connection.ExecuteAsync(updateCommand, lead, transaction);
+                if (result == 0)
+                {
+                    response.AddErrorMessage("Not updated");
+
+                    return response;
+                }
+
+                response.Model = lead;
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
