@@ -1,4 +1,5 @@
 ﻿
+using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using LeadsHub.Api.Services;
 using LeadsHub.Core.Dtos;
@@ -23,30 +24,37 @@ namespace LeadsHub.Api.Controllers
         [HttpPost("leadcards")]
         public async Task<IActionResult> FetchLeadCardsByRequestAsync(ManagerFilterRequest request)
         {
-            UserContext userContext = await _userContextService.GetUserContextAsync();
-
             FilterRequest filterRequest = new();
 
             if (request.IsLeadCreatedAtDesc)
             {
-                filterRequest.AddSortExpressionDescending(nameof(Lead.CreatedAt), "ld");
+                filterRequest.AddSortExpressionDescending(nameof(LeadCard.CreatedAt), "ld");
             }
             else if (request.IsLeadCreatedAtAsc)
             {
-                filterRequest.AddSortExpressionAscending(nameof(Lead.CreatedAt), "ld");
+                filterRequest.AddSortExpressionAscending(nameof(LeadCard.CreatedAt), "ld");
             }
             else if (request.IsInteractionDesc)
             {
-                filterRequest.AddSortExpressionDescending(nameof(LastMessageSet.LastMessageDate), "lm");
+                filterRequest.AddSortExpressionDescending(nameof(LeadCard.LastMessageDate), "lm");
             }
             else if (request.IsInteractionAsc)
             {
-                filterRequest.AddSortExpressionAscending(nameof(LastMessageSet.LastMessageDate), "lm");
+                filterRequest.AddSortExpressionAscending(nameof(LeadCard.LastMessageDate), "lm");
             }
 
-            userContext.FilterRequest.ShorthandSortExpressions = filterRequest.ShorthandSortExpressions;
+            if (!string.IsNullOrWhiteSpace(request.GlobalFilter))
+            {
+                filterRequest.AddFilter(nameof(Contact.Name), FilterOperatorEnum.Contains, FilterConnectorEnum.AND, request.GlobalFilter, "con", ignoreAccent: true);
+                filterRequest.AddFilter(nameof(Contact.PhoneNumber), FilterOperatorEnum.Contains, FilterConnectorEnum.OR, request.GlobalFilter, "con", ignoreAccent: true);
+                filterRequest.AddFilter(nameof(Contact.Email), FilterOperatorEnum.Contains, FilterConnectorEnum.OR, request.GlobalFilter, "con", ignoreAccent: true);
+                filterRequest.AddFilter(nameof(Consultant.FullName), FilterOperatorEnum.Contains, FilterConnectorEnum.OR, request.GlobalFilter, "c", ignoreAccent: true);
+            }
 
-            LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(userContext.FilterRequest);
+            UserContext userContext = await _userContextService.GetUserContextAsync();
+            filterRequest.AddFilterDescriptors(userContext.FilterRequest.FilterDescriptors);
+
+            LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(filterRequest);
             if (response.HasAnyErrorMessage)
             {
                 return BadRequest(response);

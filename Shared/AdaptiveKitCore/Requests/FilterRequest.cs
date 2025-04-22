@@ -6,7 +6,7 @@ namespace AdaptiveKitCore.Requests
 {
     public sealed class FilterRequest : InquiryRequest
     {
-        public IList<FilterDescriptor> FilterDescriptors { get; set; } = [];
+        public List<FilterDescriptor> FilterDescriptors { get; set; } = [];
 
         public FilterConnectorEnum FilterConnetor { get; set; } = new();
 
@@ -39,6 +39,19 @@ namespace AdaptiveKitCore.Requests
                 FilterConnector = connector,
                 Value = value,
                 AliasName = alias
+            });
+        }
+
+        public void AddFilter(string propertyName, FilterOperatorEnum filterOperator, FilterConnectorEnum connector, object value, string alias = "", bool ignoreAccent = false)
+        {
+            FilterDescriptors.Add(new FilterDescriptor()
+            {
+                PropertyName = propertyName,
+                FilterOperator = filterOperator,
+                FilterConnector = connector,
+                Value = value,
+                AliasName = alias,
+                IgnoreAccent = ignoreAccent
             });
         }
 

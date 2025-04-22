@@ -16,17 +16,35 @@ namespace LeadsHub.Core.Extentions
             {
                 bool hasAlias = !string.IsNullOrWhiteSpace(filter.AliasName);
 
-                string property = hasAlias ? $"{filter.AliasName}.\"{filter.PropertyName}\"" : $"\"{filter.PropertyName}\"";
+                if (!filter.IgnoreAccent)
+                {
+                    string property = hasAlias ? $"{filter.AliasName}.\"{filter.PropertyName}\"" : $"\"{filter.PropertyName}\"";
 
-                if (isFirst) 
-                {
-                    clausuleWhere += $"{property} {BuildComparisonStatement(filter)} ";                    
+                    if (isFirst)
+                    {
+                        clausuleWhere += $"{property} {BuildComparisonStatement(filter)} ";
+                    }
+
+                    if (!isFirst)
+                    {
+                        clausuleWhere += $"{filter.FilterConnector} {property} {BuildComparisonStatement(filter)} ";
+                    }
                 }
-                
-                if (!isFirst)
+
+                if (filter.IgnoreAccent)
                 {
-                    clausuleWhere += $"{filter.FilterConnector} {property} {BuildComparisonStatement(filter)} ";
-                }
+                    string property = hasAlias ? $"unaccent({filter.AliasName}.\"{filter.PropertyName}\")" : $"unaccent(\"{filter.PropertyName}\")";
+
+                    if (isFirst)
+                    {
+                        clausuleWhere += $"{property} {BuildComparisonStatementWithIgnoreAccent(filter)} ";
+                    }
+
+                    if (!isFirst)
+                    {
+                        clausuleWhere += $"{filter.FilterConnector} {property} {BuildComparisonStatementWithIgnoreAccent(filter)} ";
+                    }
+                }          
 
                 isFirst = false;
             }
@@ -56,6 +74,24 @@ namespace LeadsHub.Core.Extentions
                 FilterOperatorEnum.IsNull => "IS NULL",
                 FilterOperatorEnum.IsNotNull => "IS NOT NULL",                
                 _ => $"= '{value}'"
+            };
+
+            return statement;
+        }
+
+        private static string BuildComparisonStatementWithIgnoreAccent(FilterDescriptor filter)
+        {
+            string value = filter.Value != null && filter.Value.GetType().IsEnum ?
+                Convert.ToInt32(filter.Value).ToString() : filter.Value?.ToString() ?? string.Empty;
+
+            string statement = filter.FilterOperator switch
+            {
+                FilterOperatorEnum.Equals => $"= unaccent('{value}')",
+                FilterOperatorEnum.Contains => $"ILIKE unaccent('%{value}%')",
+                FilterOperatorEnum.NotContains => $"NOT ILIKE unaccent('%{value}%')",
+                FilterOperatorEnum.StartsWith => $"ILIKE unaccent('{value}%')",
+                FilterOperatorEnum.EndsWith => $"ILIKE unaccent('%{value}')",
+                _ => $"= unaccent('{value}')"
             };
 
             return statement;

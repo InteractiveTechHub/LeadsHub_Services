@@ -22,5 +22,7 @@ namespace AdaptiveKitCore.Model
         public object? Value { get; set; }
 
         public string AliasName { get; set; } = "";
+
+        public bool IgnoreAccent { get; set; } = false;
     }
 }

@@ -13,5 +13,7 @@
         public bool IsWinClosed { get; set; }
 
         public bool IsLostClosed { get; set; }
+
+        public string GlobalFilter { get; set; } = string.Empty;
     }
 }
