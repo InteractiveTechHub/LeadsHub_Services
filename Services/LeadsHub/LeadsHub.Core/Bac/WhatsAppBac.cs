@@ -15,10 +15,10 @@ namespace LeadsHub.Core.Bac
     public class WhatsAppBac : IWhatsAppBac
     {
         private readonly ILeadBrokerBac _leadBrokerBac;
-        private readonly ISendMessageService _sendMessageService;
+        private readonly IWhatsappService _sendMessageService;
         private readonly IWhatsAppRepository _whatsAppRepository;
 
-        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository, ISendMessageService sendMessageService)
+        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository, IWhatsappService sendMessageService)
         {
             _leadBrokerBac = leadBrokerBac;
             _whatsAppRepository = whatsAppRepository;

@@ -1,4 +1,6 @@
-﻿namespace LeadsHub.Core.Request
+﻿using Microsoft.AspNetCore.Http;
+
+namespace LeadsHub.Core.Request
 {
     public class MessageRequest
     {
@@ -16,5 +18,7 @@
         /// Token to access api
         /// </summary>
         public string AccessToken { get; set; } = string.Empty;
+
+        public IFormFile FormFile { get; set; }
     }
 }

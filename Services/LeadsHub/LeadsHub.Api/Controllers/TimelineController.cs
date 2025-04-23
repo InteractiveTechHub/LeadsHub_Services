@@ -1,8 +1,12 @@
 ﻿using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using LeadsHub.Api.Services;
+using LeadsHub.Core.Dtos;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
+using LeadsHub.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -12,11 +16,13 @@ namespace LeadsHub.Api.Controllers
     {
         private readonly IConsultantBac _consultantBac;
         private readonly ITimelineBac _timelineBac;
+        private readonly IUserContextService _userContextService;
 
-        public TimelineController(IConsultantBac consultantBac, ITimelineBac timelineBac)
+        public TimelineController(IConsultantBac consultantBac, ITimelineBac timelineBac, IUserContextService userContextService)
         {
             _consultantBac = consultantBac;
             _timelineBac = timelineBac;
+            _userContextService = userContextService;
         }
 
         [HttpPost("{timelineId:long}")]
@@ -32,25 +38,15 @@ namespace LeadsHub.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterMessagesAsync([FromBody] Timeline timeline)
+        public async Task<IActionResult> RegisterMessagesAsync([FromBody] TimelineFormData formData)
         {
-            timeline.MessageDate = timeline.MessageDate.ToUniversalTime();
+            formData.Timeline.MessageDate = formData.Timeline.MessageDate.ToUniversalTime();
 
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("NotPermitionSendMessage");
-            }
+            UserContext user = await _userContextService.GetUserContextAsync();
 
-            var response = await _consultantBac.FetchConsultantByUserIdAsync(userId);
-            if (response.HasAnyErrorMessage)
-            {
-                return BadRequest(response);
-            }
+            formData.Timeline.ConsultantId = user.ConsultantId;
 
-            timeline.ConsultantId = response.Model.ConsultantId;
-
-            SimpleResponse <Timeline> respose = await _timelineBac.RegisterTimelineAsync(timeline);
+            SimpleResponse<Timeline> respose = await _timelineBac.RegisterTimelineAsync(formData);
             if (respose.HasAnyErrorMessage)
             {
                 return BadRequest(respose);

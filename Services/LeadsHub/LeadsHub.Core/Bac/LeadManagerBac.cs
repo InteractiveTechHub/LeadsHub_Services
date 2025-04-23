@@ -9,7 +9,6 @@ using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Responses;
-using PhoneNumbers;
 
 namespace LeadsHub.Core.Bac
 {

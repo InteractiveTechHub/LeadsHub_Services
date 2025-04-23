@@ -72,6 +72,8 @@ namespace LeadsHub.Core.Models
 
         public MessageReaction? MessageReaction { get; set; }
 
+        public bool IsFile => Type.Equals(MessageType.Image) || Type.Equals(MessageType.Audio) || Type.Equals(MessageType.Video) || Type.Equals(MessageType.Document);
+
         public void ConvertsTimeUnixToUtcDateTime(string timesStamp)
         {
             long timestampUnix = Convert.ToInt64(timesStamp);

@@ -26,6 +26,8 @@ namespace LeadsHub.Core.Payloads.Whatsapp.SendMessage
         [JsonPropertyName("text")]
         public TextMessage? Text { get; set; }
 
+        public SendImage? Image { get; set; }
+
         /// <summary>
         /// Receiver numper
         /// </summary>

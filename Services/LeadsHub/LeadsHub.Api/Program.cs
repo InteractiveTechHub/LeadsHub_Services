@@ -127,7 +127,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<IActiveChatManager, ActiveChatManager>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddSingleton<IDistributionService, DistributionService>();
-builder.Services.AddSingleton<ISendMessageService, SendMessageService>();
+builder.Services.AddSingleton<IWhatsappService, WhatsappService>();
 
 // Bac
 builder.Services.AddScoped<ICompanyBac, CompanyBac>();
