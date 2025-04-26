@@ -8,9 +8,9 @@ namespace LeadsHub.Core.Models
         public virtual long Id { get; set; }
 
         [JsonIgnore]
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         [JsonIgnore]
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }

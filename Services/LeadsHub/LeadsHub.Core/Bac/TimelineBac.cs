@@ -2,6 +2,7 @@
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
 using AdaptiveKitCore.Responses;
+using Amazon.RuntimeDependencies;
 using LeadsHub.Core.Dtos;
 using LeadsHub.Core.Enum;
 using LeadsHub.Core.Extensions;
@@ -9,6 +10,7 @@ using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
+using LeadsHub.Core.Payloads.Whatsapp.Response;
 using LeadsHub.Core.Payloads.Whatsapp.SendMessage;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
@@ -27,12 +29,17 @@ namespace LeadsHub.Core.Bac
         private readonly ITimelineRepository _timelineRepository;
         private readonly IWhatsAppRepository _whatsAppRepository;
 
-        public TimelineBac(IActiveChatManager activeChatManager, 
+        private readonly AmazonS3Service _amazonS3;
+
+        public TimelineBac(
+            AmazonS3Service amazonS3,
+            IActiveChatManager activeChatManager, 
             ILeadRepository leadRepository, 
             IWhatsappService whatsappService, 
             ITimelineRepository timelineRepository, 
             IWhatsAppRepository whatsAppRepository)
         {
+            _amazonS3 = amazonS3;
             _activeChatManager = activeChatManager;
             _leadRepository = leadRepository;
             _whatsappService = whatsappService;
@@ -67,23 +74,11 @@ namespace LeadsHub.Core.Bac
             SimpleResponse<Timeline> response = new();
 
             Timeline timeline = formData.Timeline;
-            IFormFile? formFile = formData.FormFile;
+            Lead lead = formData.Lead;
 
+            timeline.LeadId = lead.Id;
             timeline.Sender = MessageSender.consultant;
             timeline.Status = MessageStatus.Sent;
-
-            SimpleResponse<Lead?> leadResponse = await _leadRepository.FetchLeadByIdAsync(timeline.LeadId);
-            if (leadResponse.HasAnyErrorMessage)
-            {
-                response.Messages.AddRange(leadResponse.Messages);
-                return response;
-            }
-
-            if (leadResponse.Model is null || leadResponse.Model.Id == 0)
-            {
-                response.AddErrorMessage("Lead not found");
-                return response;
-            }
 
             // TODO: The only person who can send a message to the lead is the one assigned to it
             // TODO: If lead does not have a consultant, it should not be possible to send a message
@@ -91,11 +86,52 @@ namespace LeadsHub.Core.Bac
             SendMessagePayLoad sendMessagePayLoad = new()
             {
                 RecepientType = "individual",
-                To = leadResponse.Model!.Contact.PhoneNumber.RemovePhoneFormat(),
+                To = lead.Contact.PhoneNumber.RemovePhoneFormat(),
             };
 
+            if (!timeline.IsFile)
+            {
+                response = await SendTextMessageAsync(timeline, sendMessagePayLoad, lead.IntegrationId);
+            }
+            
+            if (timeline.IsFile && timeline.MessageFile is not null)
+            {
+                formData.Timeline = timeline;
+
+                response = await UploadFileToWhatsappAsync(formData, sendMessagePayLoad, lead.IntegrationId);              
+            }
+
+            if (response.HasAnyErrorMessage)
+            {
+                response.Model.Status = MessageStatus.Failed;
+
+                await _timelineRepository.UpdateTimelineAsync(response.Model);
+            }
+
+            // If it is new and message was sent and lead is new.
+            if (!response.HasAnyErrorMessage && lead.Phase.Equals(LeadPhase.New))
+            {
+                lead.Phase = LeadPhase.InProgress;
+
+                await _leadRepository.UpdateLeadAsync(lead);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// The only responsability of this method is send message of kind text to whatsapp
+        /// </summary>
+        /// <param name="timeline">The timeline to be registered</param>
+        /// <param name="sendMessagePayLoad">The whatsapp object request</param>
+        /// <param name="integrationId">Id of the integration that the lead is assigned</param>
+        /// <returns>A default response</returns>
+        private async Task<SimpleResponse<Timeline>> SendTextMessageAsync(Timeline timeline, SendMessagePayLoad sendMessagePayLoad, long integrationId)
+        {
+            SimpleResponse<Timeline> response = new();
+
             // text
-            if (timeline.Type == MessageType.Text)
+            if (timeline.Type.Equals(MessageType.Text))
             {
                 sendMessagePayLoad.Type = "text";
                 sendMessagePayLoad.Text = new()
@@ -103,16 +139,10 @@ namespace LeadsHub.Core.Bac
                     PreviewUrl = false,
                     Body = timeline.Message!.Body
                 };
-
-                response = await _timelineRepository.RegisterMessageTextAsync(timeline);
-                if (response.HasAnyErrorMessage)
-                {
-                    return response;
-                }
             }
 
             // template
-            if (timeline.Type == MessageType.Template)
+            if (timeline.Type.Equals(MessageType.Template))
             {
                 var templateResponse = await _whatsAppRepository.FetchWhatsAppTemplateByIdAsync(timeline.TemplateId!.Value);
                 if (templateResponse.HasAnyErrorMessage)
@@ -131,71 +161,13 @@ namespace LeadsHub.Core.Bac
                         Code = template.Language,
                     }
                 };
-
-                response = await _timelineRepository.RegisterMessageTextAsync(timeline);
-                if (response.HasAnyErrorMessage)
-                {
-                    return response;
-                }
             }
 
-            if (timeline.IsFile && timeline.MessageFile is not null)
+            response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+            if (response.HasAnyErrorMessage)
             {
-                string fileId = await UploadFileToWhatsappAsync(formFile, leadResponse.Model.IntegrationId);
-
-                AmazonS3Service amazonS3Service = new();
-                string key = $"interactive-Leads-file-{fileId}";
-                bool isUplodated = await amazonS3Service.UploadFileAsync(key, formFile);
-
-                if (timeline.Type.Equals(MessageType.Image))
-                {
-                    sendMessagePayLoad.Type = "image";
-                    sendMessagePayLoad.Image = new()
-                    {
-                        Id = fileId,
-                        Caption = timeline.MessageFile?.Caption ?? string.Empty,
-                    };
-
-                    timeline.MessageFile!.MimeType = formFile.ContentType;
-
-                    response = await _timelineRepository.RegisterMessageFileAsync(timeline);
-                    if (response.HasAnyErrorMessage)
-                    {
-                        return response;
-                    }
-                }
+                return response;
             }
-
-            var result = await SendTextMessageAsync(sendMessagePayLoad, leadResponse.Model.IntegrationId);
-            if (result.HasAnyErrorMessage)
-            {
-                response.Messages.AddRange(result.Messages);
-                response.Model.Status = MessageStatus.Failed;
-
-                await _timelineRepository.UpdateTimelineAsync(response.Model);
-
-                // TODO: Should log the whatsapp exceptions and errors.
-            }
-
-            // If it is new and message was sent and lead is new.
-            if (!result.HasAnyErrorMessage && leadResponse.Model.Phase.Equals(LeadPhase.New))
-            {
-                leadResponse.Model.Phase = LeadPhase.InProgress;
-
-                await _leadRepository.UpdateLeadAsync(leadResponse.Model);
-            }
-
-            return response;
-        }
-
-        /// <summary>
-        /// The only responsability of this method is send message of kind text
-        /// </summary>
-        /// <param name="timeline">Message to send</param>
-        /// <returns></returns>
-        private async Task<BaseResponse> SendTextMessageAsync(SendMessagePayLoad sendMessagePayLoad, long integrationId)
-        {
-            BaseResponse response = new();
 
             FilterRequest filter = new();
             filter.AddFilter(nameof(Integration.Id), FilterOperatorEnum.Equals, integrationId, "i");
@@ -210,22 +182,39 @@ namespace LeadsHub.Core.Bac
             }
 
             MessageRequest request = new();
-
-            request.AccessToken = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).First();
-            string phoneNumberId = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).First();
+            request.AccessToken = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).FirstOrDefault() ?? string.Empty;
+            string phoneNumberId = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).FirstOrDefault() ?? string.Empty;
 
             request.Url = SD.WhatsAppAPIBase + $"/{phoneNumberId}/messages";
             request.DataJson = JsonSerializer.Serialize(sendMessagePayLoad);
 
-            response = await _whatsappService.SendMessageToWhatsApp(request);
+            var baseResponse = await _whatsappService.SendMessageToWhatsApp(request);
+            if (baseResponse.HasAnyErrorMessage)
+            {
+                response.Messages.AddRange(baseResponse.Messages);
+                return response;
+            }
 
             return response;
         }
 
-        public async Task<string> UploadFileToWhatsappAsync(IFormFile formFile, long integrationId)
+        /// <summary>
+        /// Upload file to whatsapp, store the file in amazon s3 and the timeline
+        /// </summary>
+        /// <param name="timeline">Timeline containning data to be registered</param>
+        /// <param name="formFile">The files</param>
+        /// <param name="sendMessagePayLoad">The payload request of whatsapp</param>
+        /// <param name="integrationId">Id of the integration that the lead is assigned</param>
+        /// <returns>Default response</returns>
+        private async Task<SimpleResponse<Timeline>> UploadFileToWhatsappAsync(TimelineFormData formData, SendMessagePayLoad sendMessagePayLoad, long integrationId)
         {
-            BaseResponse response = new();
+            SimpleResponse<Timeline> response = new();
+            MessageRequest request = new();
 
+            Timeline timeline = formData.Timeline;
+            IFormFile formFile = formData.FormFile!;    
+
+            // 1 - Fetch whatsapp configuration
             FilterRequest filter = new();
             filter.AddFilter(nameof(Integration.Id), FilterOperatorEnum.Equals, integrationId, "i");
 
@@ -236,20 +225,87 @@ namespace LeadsHub.Core.Bac
                 // TODO: Should return with some error.
                 response.Messages.AddRange(configRespose.Messages);
 
-                return string.Empty;
+                return response;
             }
 
-            MessageRequest request = new();
-
-            request.AccessToken = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).First();
-            string phoneNumberId = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).First();
+            request.AccessToken = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.AccessToken).FirstOrDefault() ?? string.Empty;
+            string phoneNumberId = configRespose.ResponseData.Select(r => r.WhatsAppConfig!.PhoneNumberId).FirstOrDefault() ?? string.Empty;
 
             request.Url = SD.WhatsAppAPIBase + $"/{phoneNumberId}/media";
-            request.FormFile = formFile;          
+            request.FormFile = formData.FormFile!;          
 
-            string fileId = await _whatsappService.UploadToWhatsappMediaAsync(request);
+            // 2 -  Upload to whatsapp and returns image Id from whatsapp
+            SimpleResponse<ResponseMessage> uploadResponse = await _whatsappService.UploadToWhatsappMediaAsync(request);
+            if (uploadResponse.HasAnyErrorMessage)
+            {
+                response.Messages.AddRange(uploadResponse.Messages);
+                return response;
+            }
 
-            return fileId;
+            // 3 - Upload to AWS S3
+            string fileId = uploadResponse.Model.Id;
+            string key = $"{timeline.MessageFile!.MimeType}/{fileId}-" + Guid.NewGuid();    
+
+            bool isUplodated = await _amazonS3.UploadFileAsync(key, formFile);
+            if (!isUplodated)
+            {
+                response.AddErrorMessage("File not uploaded to S3");
+                return response;
+            }
+
+            // 4 -- Register timeline with file message
+            timeline.MessageFile!.Url = $"{SD.S3BaseUrl}/{key}";
+
+            response = await _timelineRepository.RegisterMessageFileAsync(timeline);
+            if (response.HasAnyErrorMessage)
+            {
+                return response;
+            }
+
+            timeline = response.Model; //timeline updated with the Id
+            
+            // Send message with the file
+            if (timeline.Type.Equals(MessageType.Image))
+            {
+                sendMessagePayLoad.Type = "image";
+                sendMessagePayLoad.Image = new()
+                {
+                    Id = fileId,
+                    Caption = timeline.MessageFile?.Caption ?? string.Empty,
+                };
+            }
+
+            if (timeline.Type.Equals(MessageType.Video))
+            {
+                sendMessagePayLoad.Type = "video";
+                sendMessagePayLoad.Video = new()
+                {
+                    Id = fileId,
+                    Caption = timeline.MessageFile?.Caption ?? string.Empty,
+                };
+            }
+
+            if (timeline.Type.Equals(MessageType.Audio))
+            {
+                sendMessagePayLoad.Type = "audio";
+                sendMessagePayLoad.Audio = new()
+                {
+                    Id = fileId
+                };
+            }
+
+            request.DataJson = JsonSerializer.Serialize(sendMessagePayLoad);
+    
+            request.Url = SD.WhatsAppAPIBase + $"/{phoneNumberId}/messages";
+
+            var baseResponse = await _whatsappService.SendMessageToWhatsApp(request);
+            if (baseResponse.HasAnyErrorMessage)
+            {
+                response.Messages.AddRange(baseResponse.Messages);
+                return response;
+            }
+
+            return response;
         }
     }
 }

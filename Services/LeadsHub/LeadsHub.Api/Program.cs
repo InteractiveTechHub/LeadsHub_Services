@@ -27,6 +27,7 @@ ConfigurationManager configuration = builder.Configuration;
 string connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
 SD.ConnectString = connectionString;
 SD.WhatsAppAPIBase = configuration["WhatsAppBase"];
+SD.S3BaseUrl = configuration["AWS:S3:UrlBase"];
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -123,6 +124,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 
 // Services
+builder.Services.AddSingleton<AmazonS3Service>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<IActiveChatManager, ActiveChatManager>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
@@ -132,6 +134,7 @@ builder.Services.AddSingleton<IWhatsappService, WhatsappService>();
 // Bac
 builder.Services.AddScoped<ICompanyBac, CompanyBac>();
 builder.Services.AddScoped<IConsultantBac, ConsultantBac>();
+builder.Services.AddScoped<ILeadBac, LeadBac>(); 
 builder.Services.AddSingleton<ILeadBrokerBac, LeadBrokerBac>();
 builder.Services.AddScoped<ILeadManagerBac, LeadManagerBac>();
 builder.Services.AddScoped<IIntegrationBac, IntegrationBac>();

@@ -1,10 +1,9 @@
 ﻿
-
 using System.Text.Json.Serialization;
 
 namespace LeadsHub.Core.Payloads.Whatsapp.SendMessage
 {
-    public sealed class SendImage
+    public sealed class SendVideo
     {
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;

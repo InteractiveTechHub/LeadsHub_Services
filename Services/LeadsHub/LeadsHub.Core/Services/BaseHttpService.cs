@@ -1,8 +1,7 @@
 ﻿
 using System.Net;
-using System.Text.Json;
+using System.Net.Http.Headers;
 using System.Text;
-using AdaptiveKitCore.Responses;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
 
@@ -81,6 +80,43 @@ namespace LeadsHub.Core.Services
             return response;
         }
 
+        public async Task<JsonResponse> PostFileAsync(MessageRequest request)
+        {
+            JsonResponse response = new();
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+
+                await request.FormFile.CopyToAsync(memoryStream);
+                byte[] fileBytes = memoryStream.ToArray();
+
+                HttpClient client = _httpClientFactory.CreateClient("leadsManager");
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.AccessToken);
+
+                var content = new MultipartFormDataContent();
+                var byteArrayContent = new ByteArrayContent(fileBytes);
+                byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(request.FormFile.ContentType);
+
+                var mediaType = GetWhatsappMediaType(request.FormFile.ContentType);
+
+                content.Add(new StringContent("whatsapp"), "messaging_product");
+                content.Add(byteArrayContent, "file", request.FormFile.FileName);
+                content.Add(new StringContent(mediaType), "type");
+
+                HttpResponseMessage apiResponse = await client.PostAsync(request.Url, content);
+
+                response = await GetDefaultResponse(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                response.AddExceptionMessage(ex.Message);
+            }
+
+            return response;
+        }
+
         /// <summary>
         /// Get default response object
         /// </summary>
@@ -108,6 +144,19 @@ namespace LeadsHub.Core.Services
             response.DataJson = await apiResponse.Content.ReadAsStringAsync();   
 
             return response;
+        }
+
+        private string GetWhatsappMediaType(string contentType)
+        {
+            if (contentType.StartsWith("image/"))
+                return "image";
+            if (contentType.StartsWith("audio/"))
+                return "audio";
+            if (contentType.StartsWith("video/"))
+                return "video";
+
+            // WhatsApp aceita "document" como catch-all para outros tipos (ex: PDF, DOCX, etc.)
+            return "document";
         }
     }
 }

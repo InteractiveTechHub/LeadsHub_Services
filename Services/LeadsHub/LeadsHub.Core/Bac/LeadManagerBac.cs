@@ -61,7 +61,7 @@ namespace LeadsHub.Core.Bac
 
             FilterRequest filterRequest = new();
             filterRequest.AddFilter(nameof(Integration.Id), FilterOperatorEnum.Equals, lead.IntegrationId, "i");
-            filterRequest.AddFilter(nameof(WhatsAppTemplate.Status), FilterOperatorEnum.Equals, "APPROVED", "wt");
+            filterRequest.AddFilter(nameof(WhatsAppTemplate.Status), FilterOperatorEnum.Equals, "Approved", "wt"); //TODO: Tranform in enumerator
             filterRequest.AddFilter(nameof(WhatsAppTemplate.Enabled), FilterOperatorEnum.Equals, true, "wt");
 
             if (lead.Phase == LeadPhase.New)

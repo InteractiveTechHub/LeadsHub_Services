@@ -1,5 +1,6 @@
 ﻿
 using AdaptiveKitCore.Responses;
+using LeadsHub.Core.Payloads.Whatsapp.Response;
 using LeadsHub.Core.Request;
 
 namespace LeadsHub.Core.Interfaces.IServices
@@ -10,6 +11,6 @@ namespace LeadsHub.Core.Interfaces.IServices
 
         Task<BaseResponse> SendMessageToWhatsApp(MessageRequest request);
 
-        Task<string> UploadToWhatsappMediaAsync(MessageRequest request);
+        Task<SimpleResponse<ResponseMessage>> UploadToWhatsappMediaAsync(MessageRequest request);
     }
 }

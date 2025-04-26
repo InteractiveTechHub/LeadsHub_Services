@@ -190,9 +190,11 @@ namespace LeadsHub.Data.Repository
 
                 using var transaction = await connection.BeginTransactionAsync();
 
-                timeline.MessageFileId = await connection.ExecuteAsync(insertFile, timeline.MessageFile, transaction);
-                if (timeline.MessageTextId > 0)
+                timeline.MessageFileId = await connection.ExecuteScalarAsync<long>(insertFile, timeline.MessageFile, transaction);
+                if (timeline.MessageFileId > 0)
                 {
+                    timeline.MessageFile!.Id = timeline.MessageFileId.Value;
+
                     timeline = await RegisterTimelineAsync(timeline, transaction);
                 }
 
@@ -211,7 +213,7 @@ namespace LeadsHub.Data.Repository
 
         public async Task UpdateTimelineAsync(Timeline timeline)
         {
-            string updateCommand = "UPDATE \"Timeline\" SET \"ConsultantId\"=@ConsultantId, \"MessageId\"=@MessageId, \"Sender\"=@Sender, \"Status\"=@Status, \"ReadAt\"=@ReadAt, \"UpdatedAt\"=@UpdatedAt WHERE \"TimelineId\"=@TimelineId;";
+            string updateCommand = "UPDATE \"Timeline\" SET \"ConsultantId\"=@ConsultantId, \"MessageId\"=@MessageId, \"Sender\"=@Sender, \"Status\"=@Status, \"ReadAt\"=@ReadAt, \"UpdatedAt\"=@UpdatedAt WHERE \"Id\"=@Id;";
 
             try
             {

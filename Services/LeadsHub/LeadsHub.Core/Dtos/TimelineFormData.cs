@@ -8,6 +8,8 @@ namespace LeadsHub.Core.Dtos
     {
         public Timeline Timeline { get; set; } = new();
 
+        public Lead Lead { get; set; } = new();
+
         public IFormFile? FormFile { get; set; }
     }
 }

@@ -10,21 +10,19 @@ using Microsoft.Extensions.Configuration;
 namespace LeadsHub.Core.Services
 {
     public sealed class AmazonS3Service
-    {
-        
+    { 
         private string AwsKeyAccess { get; set; }
         private string AwsKeySecret { get; set; }
         private string BucketName { get; set; }
         private BasicAWSCredentials Credentials { get; set; }
 
         private readonly IAmazonS3 _s3Client;
-        private IConfiguration _config = default!;
 
-        public AmazonS3Service()
+        public AmazonS3Service(IConfiguration config)
         {
-            BucketName = _config["AWS:S3:BucketName"]!;
-            AwsKeyAccess = _config["AWS:S3:AccessKey"]!;
-            AwsKeySecret = _config["AWS:S3:SecretKey"]!;
+            BucketName = config["AWS:S3:BucketName"]!;
+            AwsKeyAccess = config["AWS:S3:AccessKey"]!;
+            AwsKeySecret = config["AWS:S3:SecretKey"]!;
             Credentials = new BasicAWSCredentials(AwsKeyAccess, AwsKeySecret);
 
             var s3Config = new AmazonS3Config

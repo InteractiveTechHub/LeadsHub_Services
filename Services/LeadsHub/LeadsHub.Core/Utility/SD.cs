@@ -7,5 +7,7 @@
         public static string MediaConfigConnection { get; set; } = string.Empty;
 
         public static string? WhatsAppAPIBase { get; set; } = string.Empty;
+
+        public static string? S3BaseUrl { get; set; } = string.Empty;
     }
 }

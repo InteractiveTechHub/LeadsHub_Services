@@ -26,7 +26,20 @@ namespace LeadsHub.Core.Payloads.Whatsapp.SendMessage
         [JsonPropertyName("text")]
         public TextMessage? Text { get; set; }
 
+        /// <summary>
+        /// Image to send to customer.
+        /// </summary>
+        [JsonPropertyName("image")]
         public SendImage? Image { get; set; }
+
+        /// <summary>
+        /// Video to send to customer.
+        /// </summary>
+        [JsonPropertyName("video")]
+        public SendVideo? Video { get; set; }
+
+        [JsonPropertyName("audio")]
+        public SendAudio? Audio { get; set; }
 
         /// <summary>
         /// Receiver numper
