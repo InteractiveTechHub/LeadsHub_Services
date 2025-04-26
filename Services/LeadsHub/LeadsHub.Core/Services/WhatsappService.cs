@@ -22,7 +22,7 @@ namespace LeadsHub.Core.Services
         {
             MessageRequest request = new()
             {
-                AccessToken = "EAAeEsZAPiTggBOZCuztpIgoV3TahzRLZBpoByE2aJ8l3NwKAAezwKGh4bOH69tHCeq1uvTxCvCnQiq9RdwzEDFBR2ys3cAQA5dv81g11QJnQCmjH2nl5y4DfDf6k9mZBsx2nnWOc2s4XU8i1cFNZAtg3kQiI14Esz3ZCOtNBTR8zipOFKzQ0leBn06Kz61FpIZB9gZDZD",
+                AccessToken = config.AccessToken,
                 Url = $"{SD.WhatsAppAPIBase}/{mediaId}"
             };
 

@@ -74,12 +74,12 @@ namespace LeadsHub.Core.Bac
                 lead.Contact.PhoneNumber = $"+{message.From}";
                 timeline.MessageId = message.Id;
                 timeline.Status = MessageStatus.Delivered;
+                timeline.Type = DetectMessageType(message.Type);
 
                 timeline.ConvertsTimeUnixToUtcDateTime(message.TimeStamp);
 
                 if (message.Type.Equals("text"))
                 {
-                    timeline.Type = MessageType.Text;
                     timeline.Message = new()
                     {
                         Body = message.Text.Body
@@ -94,7 +94,11 @@ namespace LeadsHub.Core.Bac
                     timeline.MessageReaction!.MessageId = message.Reaction.MessageId;
                 }
 
-                if (message.Type.Equals("image") || message.Type.Equals("video") || message.Type.Equals("audio") || message.Type.Equals("document"))
+                if (message.Type.Equals("image") 
+                    || message.Type.Equals("video") 
+                    || message.Type.Equals("audio") 
+                    || message.Type.Equals("document")
+                    || message.Type.Equals("sticker"))
                 {
                     WhatsAppConfig? config = response.ResponseData.Select(r => r.WhatsAppConfig).FirstOrDefault();
                     if (config is null)
@@ -109,8 +113,7 @@ namespace LeadsHub.Core.Bac
                     {
                         return;
                     }
-
-                    timeline.Type = DetectMessageType(message.Type);
+                   
                     timeline.MessageFile = DetectMessageFile(message);
                     timeline.MessageFile.Url = $"{SD.S3BaseUrl}/{uri}";
                     string whatsImageId = message.Image.Sha256;
@@ -144,6 +147,8 @@ namespace LeadsHub.Core.Bac
                 string type when type.Equals("video") => new MessageFile() { Caption = message.Video.Caption, MimeType = message.Video.MimeType },
                 string type when type.Equals("audio") => new MessageFile() { MimeType = message.Audio.MimeType },
                 string type when type.Equals("document") => new MessageFile() { Caption = message.Document.Caption, MimeType = message.Document.MimeType },
+                string type when type.Equals("sticker") => new MessageFile() { MimeType = message.Sticker.MimeType },
+                _ => new(),
             };
         }
 
@@ -153,10 +158,14 @@ namespace LeadsHub.Core.Bac
 
             return whatsType switch
             {
-                string type when type.Equals("image") => MessageType.Image,
-                string type when type.Equals("video") => MessageType.Video,
                 string type when type.Equals("audio") => MessageType.Audio,
+                string type when type.Equals("contact") => MessageType.Contact,
                 string type when type.Equals("document") => MessageType.Document,
+                string type when type.Equals("image") => MessageType.Image,
+                string type when type.Equals("location") => MessageType.Location,
+                string type when type.Equals("sticker") => MessageType.Sticker,
+                string type when type.Equals("text") => MessageType.Text,              
+                string type when type.Equals("video") => MessageType.Video,
                 _ => MessageType.Document // fallback
             };
         }
@@ -169,6 +178,7 @@ namespace LeadsHub.Core.Bac
                 string type when type.Equals("video") => message.Video.Id,
                 string type when type.Equals("audio") => message.Audio.Id,
                 string type when type.Equals("document") => message.Document.Id,
+                string type when type.Equals("sticker") => message.Sticker.Id,
                 _ => message.Document.Id // fallback
             };
         }

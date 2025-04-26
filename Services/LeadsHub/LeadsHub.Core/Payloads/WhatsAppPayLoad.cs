@@ -1,5 +1,6 @@
 ﻿
 
+using Amazon.S3.Model;
 using System.Text.Json.Serialization;
 
 namespace LeadsHub.Core.Payloads
@@ -69,6 +70,8 @@ namespace LeadsHub.Core.Payloads
         public PayloadImage Audio { get; set; } = new();
 
         public PayloadImage Video { get; set; } = new();
+
+        public PayloadImage Sticker { get; set; } = new();
 
         public PayloadImage Document { get; set; } = new();
 
