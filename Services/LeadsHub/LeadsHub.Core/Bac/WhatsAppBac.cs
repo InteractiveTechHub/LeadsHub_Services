@@ -12,6 +12,7 @@ using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
 using LeadsHub.Core.Services;
 using LeadsHub.Core.Utility;
+using Microsoft.AspNetCore.Http;
 
 namespace LeadsHub.Core.Bac
 {
@@ -93,7 +94,7 @@ namespace LeadsHub.Core.Bac
                     timeline.MessageReaction!.MessageId = message.Reaction.MessageId;
                 }
 
-                if (message.Type.Equals("image"))
+                if (message.Type.Equals("image") || message.Type.Equals("video") || message.Type.Equals("audio") || message.Type.Equals("document"))
                 {
                     WhatsAppConfig? config = response.ResponseData.Select(r => r.WhatsAppConfig).FirstOrDefault();
                     if (config is null)
@@ -101,17 +102,17 @@ namespace LeadsHub.Core.Bac
                         return;
                     }
 
-                    var uri = await _whatsappService.GetMediaFromWhatsapp(message.Image.Id, config);
+                    string messageId = DetectFileId(message);
+
+                    var uri = await _whatsappService.GetMediaFromWhatsapp(messageId, config);
                     if (string.IsNullOrEmpty(uri))
                     {
                         return;
                     }
 
-                    timeline.Type = MessageType.Image;
-                    timeline.MessageFile = new();
-                    timeline.MessageFile!.Url = $"{SD.S3BaseUrl}/{uri}";
-                    timeline.MessageFile!.MimeType = message.Image.MimeType;
-                    timeline.MessageFile!.Caption = message.Image.Caption;
+                    timeline.Type = DetectMessageType(message.Type);
+                    timeline.MessageFile = DetectMessageFile(message);
+                    timeline.MessageFile.Url = $"{SD.S3BaseUrl}/{uri}";
                     string whatsImageId = message.Image.Sha256;
                 }
 
@@ -131,6 +132,45 @@ namespace LeadsHub.Core.Bac
             var response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filterRequest);
 
             return response;
+        }
+
+        private MessageFile DetectMessageFile(PayLoadMessage message)
+        {
+            string whatsType = message.Type.ToLower();
+
+            return whatsType switch
+            {
+                string type when type.Equals("image") => new MessageFile() { Caption = message.Image.Caption, MimeType = message.Image.MimeType },
+                string type when type.Equals("video") => new MessageFile() { Caption = message.Video.Caption, MimeType = message.Video.MimeType },
+                string type when type.Equals("audio") => new MessageFile() { MimeType = message.Audio.MimeType },
+                string type when type.Equals("document") => new MessageFile() { Caption = message.Document.Caption, MimeType = message.Document.MimeType },
+            };
+        }
+
+        private MessageType DetectMessageType(string whatsType)
+        {
+            whatsType = whatsType.ToLower();
+
+            return whatsType switch
+            {
+                string type when type.Equals("image") => MessageType.Image,
+                string type when type.Equals("video") => MessageType.Video,
+                string type when type.Equals("audio") => MessageType.Audio,
+                string type when type.Equals("document") => MessageType.Document,
+                _ => MessageType.Document // fallback
+            };
+        }
+        
+        private string DetectFileId(PayLoadMessage message)
+        {
+            return message.Type switch
+            {
+                string type when type.Equals("image") => message.Image.Id,
+                string type when type.Equals("video") => message.Video.Id,
+                string type when type.Equals("audio") => message.Audio.Id,
+                string type when type.Equals("document") => message.Document.Id,
+                _ => message.Document.Id // fallback
+            };
         }
     }
 }

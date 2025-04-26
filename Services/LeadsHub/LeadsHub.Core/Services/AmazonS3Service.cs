@@ -57,5 +57,27 @@ namespace LeadsHub.Core.Services
 
             return true;
         }
+
+        public async Task<bool> UploadFileAsync(string key, Stream stream, string contentType)
+        {
+            try
+            {
+                var fileTransferUtility = new TransferUtility(_s3Client);
+
+                await fileTransferUtility.UploadAsync(new TransferUtilityUploadRequest
+                {
+                    InputStream = stream,
+                    Key = key,
+                    BucketName = BucketName,
+                    ContentType = contentType
+                });
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

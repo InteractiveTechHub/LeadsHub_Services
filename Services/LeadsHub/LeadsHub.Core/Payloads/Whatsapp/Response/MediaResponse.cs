@@ -6,7 +6,7 @@ namespace LeadsHub.Core.Payloads.Whatsapp.Response
     public sealed class MediaResponse
     {
         [JsonPropertyName("file_size")]
-        public string FileSize { get; set; } = string.Empty;
+        public long FileSize { get; set; }
 
         public string Id { get; set; } = string.Empty;
 
@@ -16,8 +16,10 @@ namespace LeadsHub.Core.Payloads.Whatsapp.Response
         [JsonPropertyName("mime_type")]
         public string MimeType { get; set; } = string.Empty;
 
+        [JsonPropertyName("sha256")]
         public string SHA256 { get; set; } = string.Empty;
 
+        [JsonPropertyName("url")]
         public string Url { get; set; } = string.Empty;
 
     }

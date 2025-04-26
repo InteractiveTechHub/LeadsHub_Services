@@ -66,6 +66,12 @@ namespace LeadsHub.Core.Payloads
 
         public PayloadImage Image { get; set; } = new();
 
+        public PayloadImage Audio { get; set; } = new();
+
+        public PayloadImage Video { get; set; } = new();
+
+        public PayloadImage Document { get; set; } = new();
+
         public string TimeStamp { get; set; } = string.Empty;
 
         public string Type { get; set; } = string.Empty;
@@ -104,6 +110,8 @@ namespace LeadsHub.Core.Payloads
         public string Sha256 { get; set; } = string.Empty;
 
         public string Id { get; set; } = string.Empty;
+
+        public string FileName { get; set; } = string.Empty;
     }
 
     public sealed class PayLoadContactToReceive

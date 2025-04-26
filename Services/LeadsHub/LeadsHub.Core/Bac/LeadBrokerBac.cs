@@ -122,7 +122,13 @@ namespace LeadsHub.Core.Bac
 
                 if (timeline.Type.Equals(MessageType.Text) || timeline.Type.Equals(MessageType.Template))
                 {
-                    var response = await _timelineRepository.RegisterMessageTextAsync(timeline);
+                    await _timelineRepository.RegisterMessageTextAsync(timeline);
+                }
+
+                // Video, Image, audio, file, document, etc
+                if (timeline.IsFile)
+                {
+                    await _timelineRepository.RegisterMessageFileAsync(timeline);
                 }
 
                 if (timeline.Type.Equals(MessageType.Reaction))
@@ -130,14 +136,6 @@ namespace LeadsHub.Core.Bac
                     // Update or register reaction
                     //TODO: Try to find reaction (insert or update), Fetch the message to get the message body
                     // Update frontend timeline with the reaction.
-                }
-
-                if (timeline.Type.Equals(MessageType.Document))
-                {
-                    // TODO: Mark as deleted when the message is deleted;
-
-                    // Register image
-                    var response = await _timelineRepository.RegisterMessageFileAsync(timeline);
                 }
             }
 

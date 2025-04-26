@@ -7,8 +7,6 @@ using LeadsHub.Core.Payloads.Whatsapp.Response;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
 using LeadsHub.Core.Utility;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -24,7 +22,7 @@ namespace LeadsHub.Core.Services
         {
             MessageRequest request = new()
             {
-                AccessToken = config.AccessToken,
+                AccessToken = "EAAeEsZAPiTggBOZCuztpIgoV3TahzRLZBpoByE2aJ8l3NwKAAezwKGh4bOH69tHCeq1uvTxCvCnQiq9RdwzEDFBR2ys3cAQA5dv81g11QJnQCmjH2nl5y4DfDf6k9mZBsx2nnWOc2s4XU8i1cFNZAtg3kQiI14Esz3ZCOtNBTR8zipOFKzQ0leBn06Kz61FpIZB9gZDZD",
                 Url = $"{SD.WhatsAppAPIBase}/{mediaId}"
             };
 
@@ -33,6 +31,8 @@ namespace LeadsHub.Core.Services
             if (!httpResponse.IsSuccessStatusCode)
             {
                 var r = GetDefaultResponse(httpResponse);
+
+                return string.Empty;
             }        
 
             MediaResponse? media = await httpResponse.Content.ReadFromJsonAsync<MediaResponse>();
@@ -53,20 +53,9 @@ namespace LeadsHub.Core.Services
             Stream fileStream = await httpResponse.Content.ReadAsStreamAsync();
 
             // 3 - Turn into IFormFile and then upload to S3
-            string fileName = $"{mediaId}/{GetExtensionFromMimeType(media.MimeType)}";
-            MemoryStream memoryStream = new();
-            await fileStream.CopyToAsync(memoryStream);
-            memoryStream.Position = 0;
-
-            IFormFile formFile = new FormFile(memoryStream, 0, memoryStream.Length, "file", fileName)
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = media.MimeType,
-            };
-       
             string key = $"whatsap/{media.MimeType}/{mediaId}-{Guid.NewGuid()}";
 
-            bool isUpdload = await _amazonS3Service.UploadFileAsync(key, formFile);
+            bool isUpdload = await _amazonS3Service.UploadFileAsync(key, fileStream, media.MimeType);
             if (!isUpdload)
             {
                 //TODO: log something here maybe
