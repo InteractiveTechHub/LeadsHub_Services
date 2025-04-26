@@ -56,6 +56,7 @@ namespace LeadsHub.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("fetchAllWhatsApp")]
         public async Task<IActionResult> FetchAllWhatsAppByRequest(FilterRequest filterRequest)
         {
             var response = await _whatsappBac.FetchAllWhatsAppByRequestAsync(filterRequest);

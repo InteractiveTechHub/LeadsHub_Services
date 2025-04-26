@@ -48,36 +48,50 @@ namespace LeadsHub.Core.Services
             return response;
         }
 
-        public async Task<JsonResponse> GetAsync(MessageRequest request)
+        public async Task<HttpResponseMessage> GetAsync(MessageRequest request)
         {
-            JsonResponse response = new();
+            HttpClient client = _httpClientFactory.CreateClient("leadsManager");
 
-            try
+            HttpRequestMessage message = new();
+            message.Headers.Add("Accept", "application/json");
+
+            if (!string.IsNullOrWhiteSpace(request.AccessToken))
             {
-                HttpClient client = _httpClientFactory.CreateClient("leadsManager");
-
-                HttpRequestMessage message = new();
-                message.Headers.Add("Accept", "application/json");
-
-                if (!string.IsNullOrWhiteSpace(request.AccessToken))
-                {
-                    message.Headers.Add("Authorization", $"Bearer {request.AccessToken}");
-                }
-
-                message.Method = HttpMethod.Get;
-                message.RequestUri = new Uri($"{request.Url}");
-                message.Content = new StringContent(request.DataJson, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage apiResponse = await client.SendAsync(message);
-
-                response = await GetDefaultResponse(apiResponse);
+                message.Headers.Add("Authorization", $"Bearer {request.AccessToken}");
             }
-            catch (Exception ex)
-            {
-                response.AddExceptionMessage(ex.Message);
-            }
+
+            message.Method = HttpMethod.Get;
+            message.RequestUri = new Uri($"{request.Url}");
+            message.Content = new StringContent(request.DataJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await client.SendAsync(message);
 
             return response;
+        }
+
+        public async Task GetStreamAsync(MessageRequest request)
+        {
+            HttpClient client = _httpClientFactory.CreateClient("leadsManager");
+
+            HttpRequestMessage message = new();
+            message.Headers.Add("Accept", "application/json");
+
+            if (!string.IsNullOrWhiteSpace(request.AccessToken))
+            {
+                message.Headers.Add("Authorization", $"Bearer {request.AccessToken}");
+            }
+
+            message.Method = HttpMethod.Get;
+            message.RequestUri = new Uri($"{request.Url}");
+            message.Content = new StringContent(request.DataJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage apiResponse = await client.SendAsync(message);
+            if (!apiResponse.IsSuccessStatusCode)
+            {
+
+            }
+
+            Stream stream = await apiResponse.Content.ReadAsStreamAsync();
         }
 
         public async Task<JsonResponse> PostFileAsync(MessageRequest request)

@@ -7,22 +7,25 @@ using LeadsHub.Core.Interfaces.IRepository;
 using LeadsHub.Core.Interfaces.IServices;
 using LeadsHub.Core.Models;
 using LeadsHub.Core.Payloads;
+using LeadsHub.Core.Payloads.Whatsapp.Response;
 using LeadsHub.Core.Request;
 using LeadsHub.Core.Responses;
+using LeadsHub.Core.Services;
+using LeadsHub.Core.Utility;
 
 namespace LeadsHub.Core.Bac
 {
     public class WhatsAppBac : IWhatsAppBac
     {
         private readonly ILeadBrokerBac _leadBrokerBac;
-        private readonly IWhatsappService _sendMessageService;
+        private readonly IWhatsappService _whatsappService;
         private readonly IWhatsAppRepository _whatsAppRepository;
 
-        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository, IWhatsappService sendMessageService)
+        public WhatsAppBac(ILeadBrokerBac leadBrokerBac, IWhatsAppRepository whatsAppRepository, IWhatsappService whatsappService)
         {
             _leadBrokerBac = leadBrokerBac;
             _whatsAppRepository = whatsAppRepository;
-            _sendMessageService = sendMessageService;
+            _whatsappService = whatsappService;
         }
 
         public async Task ReceiveMessageFromWhatsappAsync(WhatsAppPayLoad whatsappMessage)
@@ -47,7 +50,7 @@ namespace LeadsHub.Core.Bac
             FilterRequest filter = new();
             filter.AddFilter(nameof(WhatsAppConfig.PhoneNumberId), FilterOperatorEnum.Equals, phoneNumberId, "w");
 
-            var response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filter);
+            BaseResponse<Integration> response = await _whatsAppRepository.FetchWhatsappConfigByRequestAsync(filter);
             if (response.HasAnyErrorMessage)
             {
                 return;
@@ -92,10 +95,24 @@ namespace LeadsHub.Core.Bac
 
                 if (message.Type.Equals("image"))
                 {
+                    WhatsAppConfig? config = response.ResponseData.Select(r => r.WhatsAppConfig).FirstOrDefault();
+                    if (config is null)
+                    {
+                        return;
+                    }
+
+                    var uri = await _whatsappService.GetMediaFromWhatsapp(message.Image.Id, config);
+                    if (string.IsNullOrEmpty(uri))
+                    {
+                        return;
+                    }
+
                     timeline.Type = MessageType.Image;
+                    timeline.MessageFile = new();
+                    timeline.MessageFile!.Url = $"{SD.S3BaseUrl}/{uri}";
                     timeline.MessageFile!.MimeType = message.Image.MimeType;
-                    timeline.MessageFile.Caption = message.Image.Caption;
-                    string whatsImageId = message.Image.Sha256; //Or message.Image.Id; 
+                    timeline.MessageFile!.Caption = message.Image.Caption;
+                    string whatsImageId = message.Image.Sha256;
                 }
 
                 if (message.Type.Equals("unsupported"))
