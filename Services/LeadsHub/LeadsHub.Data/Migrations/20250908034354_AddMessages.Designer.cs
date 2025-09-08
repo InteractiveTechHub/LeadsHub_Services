@@ -3,6 +3,7 @@ using System;
 using LeadsHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LeadsHub.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250908034354_AddMessages")]
+    partial class AddMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,68 +135,6 @@ namespace LeadsHub.Data.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "user-001",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ConcurrencyStamp123",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "joao.silva@techcorp.com.br",
-                            EmailConfirmed = true,
-                            Enabled = true,
-                            LockoutEnabled = true,
-                            NormalizedEmail = "JOAO.SILVA@TECHCORP.COM.BR",
-                            NormalizedUserName = "JOAO.SILVA@TECHCORP.COM.BR",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHashExample123",
-                            PhoneNumber = "(11) 99999-9999",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "SecurityStamp123",
-                            TwoFactorEnabled = false,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            UserName = "joao.silva@techcorp.com.br"
-                        },
-                        new
-                        {
-                            Id = "user-002",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ConcurrencyStamp456",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "maria.santos@inovacaodigital.com.br",
-                            EmailConfirmed = true,
-                            Enabled = true,
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MARIA.SANTOS@INOVACAODIGITAL.COM.BR",
-                            NormalizedUserName = "MARIA.SANTOS@INOVACAODIGITAL.COM.BR",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHashExample123",
-                            PhoneNumber = "(21) 88888-8888",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "SecurityStamp456",
-                            TwoFactorEnabled = false,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            UserName = "maria.santos@inovacaodigital.com.br"
-                        },
-                        new
-                        {
-                            Id = "user-003",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ConcurrencyStamp789",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "pedro.oliveira@startuphub.com.br",
-                            EmailConfirmed = true,
-                            Enabled = true,
-                            LockoutEnabled = true,
-                            NormalizedEmail = "PEDRO.OLIVEIRA@STARTUPHUB.COM.BR",
-                            NormalizedUserName = "PEDRO.OLIVEIRA@STARTUPHUB.COM.BR",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHashExample123",
-                            PhoneNumber = "(31) 77777-7777",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "SecurityStamp789",
-                            TwoFactorEnabled = false,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            UserName = "pedro.oliveira@startuphub.com.br"
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.Address", b =>
@@ -454,41 +395,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("UserIdentityId");
 
                     b.ToTable("Consultant", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Enabled = true,
-                            FullName = "João Silva",
-                            IdentityId = "user-001",
-                            NickName = "João",
-                            PhotoUrl = "https://example.com/joao.jpg",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Enabled = true,
-                            FullName = "Maria Santos",
-                            IdentityId = "user-002",
-                            NickName = "Maria",
-                            PhotoUrl = "https://example.com/maria.jpg",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Enabled = true,
-                            FullName = "Pedro Oliveira",
-                            IdentityId = "user-003",
-                            NickName = "Pedro",
-                            PhotoUrl = "https://example.com/pedro.jpg",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.ConsultantCompany", b =>
@@ -520,35 +426,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("ConsultantId");
 
                     b.ToTable("ConsultantCompany", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            IdentityId = "user-001",
-                            ConsultantId = 1L,
-                            CompanyId = 1L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Id = 1L,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            IdentityId = "user-002",
-                            ConsultantId = 2L,
-                            CompanyId = 2L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Id = 2L,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            IdentityId = "user-003",
-                            ConsultantId = 3L,
-                            CompanyId = 3L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Id = 3L,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.Contact", b =>
@@ -746,56 +623,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("TimelineId");
 
                     b.ToTable("LastMessage", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            LeadId = 1L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 10, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Perfeito! Qual seria o melhor horário para a demonstração? Preciso de algo que funcione bem para minha equipe de 5 pessoas.",
-                            Status = (short)3,
-                            TimelineId = 3L
-                        },
-                        new
-                        {
-                            LeadId = 2L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 11, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Sim, por favor! E qual seria o prazo para desenvolvimento? Preciso lançar em 2 meses.",
-                            Status = (short)3,
-                            TimelineId = 6L
-                        },
-                        new
-                        {
-                            LeadId = 3L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Excelente! Confirmado para quinta às 14h. Vou preparar uma apresentação com nosso plano de transformação digital. Até lá!",
-                            Status = (short)3,
-                            TimelineId = 10L
-                        },
-                        new
-                        {
-                            LeadId = 4L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Excelente! Confirmado para quinta às 14h. Vou preparar uma apresentação com nosso plano de transformação digital. Até lá!",
-                            Status = (short)3,
-                            TimelineId = 10L
-                        },
-                        new
-                        {
-                            LeadId = 5L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Sim! Já desenvolvemos 3 apps de delivery. Posso enviar os cases e agendar uma call para detalhar o projeto?",
-                            Status = (short)3,
-                            TimelineId = 14L
-                        },
-                        new
-                        {
-                            LeadId = 6L,
-                            LastMessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 16, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMessageText = "Sem problemas, Juliana! Se precisar de algo no futuro, estaremos aqui. Boa sorte com o projeto!",
-                            Status = (short)3,
-                            TimelineId = 16L
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.Lead", b =>
@@ -877,7 +704,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "AD001",
                             Channel = 1,
                             CompanyId = 1L,
-                            ConsultantId = 1L,
                             ContactId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 1L,
@@ -892,7 +718,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "FB001",
                             Channel = 2,
                             CompanyId = 1L,
-                            ConsultantId = 1L,
                             ContactId = 2L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 1L,
@@ -907,7 +732,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "AD002",
                             Channel = 1,
                             CompanyId = 2L,
-                            ConsultantId = 2L,
                             ContactId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 2L,
@@ -922,7 +746,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "GOOGLE001",
                             Channel = 3,
                             CompanyId = 2L,
-                            ConsultantId = 2L,
                             ContactId = 4L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 2L,
@@ -937,7 +760,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "AD003",
                             Channel = 1,
                             CompanyId = 3L,
-                            ConsultantId = 3L,
                             ContactId = 5L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 3L,
@@ -952,7 +774,6 @@ namespace LeadsHub.Data.Migrations
                             AdCode = "FB002",
                             Channel = 2,
                             CompanyId = 3L,
-                            ConsultantId = 3L,
                             ContactId = 6L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IntegrationId = 3L,
@@ -1059,68 +880,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("PipelineStageId");
 
                     b.ToTable("LeadStage", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 1L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 10, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 2L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 2L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 11, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 4L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 3L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 7L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 4L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 10L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 5L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 12L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 6L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            LeadId = 6L,
-                            MovedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 16, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PipelineStageId = 11L,
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.MessageFile", b =>
@@ -1362,143 +1121,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("SalesPipelineId");
 
                     b.ToTable("PipelineStage", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)1,
-                            SalesPipelineId = 1L,
-                            Title = "Novos Leads",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)2,
-                            SalesPipelineId = 1L,
-                            Title = "Qualificados",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)3,
-                            SalesPipelineId = 1L,
-                            Title = "Proposta Enviada",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)4,
-                            SalesPipelineId = 1L,
-                            Title = "Negociação",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)5,
-                            SalesPipelineId = 1L,
-                            Title = "Fechado",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 6L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)1,
-                            SalesPipelineId = 2L,
-                            Title = "Interesse Inicial",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 7L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)2,
-                            SalesPipelineId = 2L,
-                            Title = "Reunião Agendada",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 8L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)3,
-                            SalesPipelineId = 2L,
-                            Title = "Apresentação",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 9L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)4,
-                            SalesPipelineId = 2L,
-                            Title = "Proposta",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 10L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)5,
-                            SalesPipelineId = 2L,
-                            Title = "Fechado",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 11L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)1,
-                            SalesPipelineId = 3L,
-                            Title = "Contato Inicial",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 12L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)2,
-                            SalesPipelineId = 3L,
-                            Title = "Briefing",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 13L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)3,
-                            SalesPipelineId = 3L,
-                            Title = "Orçamento",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 14L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)4,
-                            SalesPipelineId = 3L,
-                            Title = "Desenvolvimento",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 15L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Position = (short)5,
-                            SalesPipelineId = 3L,
-                            Title = "Entregue",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.Product", b =>
@@ -1674,38 +1296,6 @@ namespace LeadsHub.Data.Migrations
                     b.HasIndex("ConsultantId");
 
                     b.ToTable("SalesPipeline", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CompanyId = 1L,
-                            ConsultantId = 1L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Pipeline CRM - TechCorp",
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CompanyId = 2L,
-                            ConsultantId = 2L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Pipeline Consultoria - Inovação Digital",
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            CompanyId = 3L,
-                            ConsultantId = 3L,
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Pipeline Apps - StartupHub",
-                            Position = (short)1,
-                            UpdatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LeadsHub.Core.Models.Timeline", b =>
@@ -1790,7 +1380,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 1L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1804,7 +1393,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 1L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 10, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1818,7 +1406,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 1L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 10, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1832,7 +1419,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 2L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1846,7 +1432,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 2L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 11, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1860,7 +1445,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            ConsultantId = 1L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 2L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 11, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1874,7 +1458,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            ConsultantId = 2L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 3L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1888,7 +1471,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            ConsultantId = 2L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 3L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1902,7 +1484,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            ConsultantId = 2L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 3L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1916,7 +1497,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            ConsultantId = 2L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 3L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1930,7 +1510,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 5L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1944,7 +1523,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 5L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1958,7 +1536,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 13L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 5L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 10, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1972,7 +1549,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 14L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 5L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 15, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -1986,7 +1562,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 15L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 6L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 16, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -2000,7 +1575,6 @@ namespace LeadsHub.Data.Migrations
                         new
                         {
                             Id = 16L,
-                            ConsultantId = 3L,
                             CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             LeadId = 6L,
                             MessageDate = new DateTimeOffset(new DateTime(2024, 1, 1, 16, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),

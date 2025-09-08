@@ -50,7 +50,7 @@ namespace LeadsHub.Core.Bac
         public async Task<TimelineResponse> FetchTimelineByRequestAsync(long leadId, FilterRequest filterRequest)
         {
             TimelineResponse response = await _timelineRepository.FetchTimelineByRequestAsync(leadId, filterRequest);
-            if (response.HasAnyErrorMessage)
+            if (response.HasAnyErrorMessage || response.ResponseData.Count == 0)
             {
                 return response;
             }
