@@ -6,6 +6,11 @@ namespace LeadsHub.Core.Models
     public sealed class Company : BaseModel
     {
         /// <summary>
+        /// Postgres Default UUID 
+        /// </summary>
+        public Guid Identifier { get; set; }
+
+        /// <summary>
         /// The commercial name
         /// </summary>
         public string BrandName { get; set; } = string.Empty;

@@ -72,6 +72,9 @@ namespace LeadsHub.Core.Models
 
         public MessageReaction? MessageReaction { get; set; }
 
+        public Lead Lead { get; set; } = new();
+        public Consultant? Consultant { get; set; }
+
         public bool IsFile => Type.Equals(MessageType.Image) 
             || Type.Equals(MessageType.Audio) 
             || Type.Equals(MessageType.Video) 

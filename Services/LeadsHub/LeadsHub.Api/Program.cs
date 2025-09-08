@@ -1,4 +1,3 @@
-using DbUp;
 using InteractiveLeads.Core.Enums;
 using LeadsHub.Api.Services;
 using LeadsHub.Core.Bac;
@@ -174,30 +173,9 @@ app.MapHub<LeadHub>("/leadhub");
 
 await ApplyMigrationAsync();
 ApplyUserAndRolesAsync();
-ApplyScripts();
 
 app.Run();
 
-void ApplyScripts() {
-    var updgrader = DeployChanges.To.PostgresqlDatabase(connectionString)
-        .WithScriptsEmbeddedInAssembly(typeof(ApplicationDbContext).Assembly)
-        .LogToConsole()
-        .LogScriptOutput()
-        .Build();
-
-    var result = updgrader.PerformUpgrade();
-
-    if (result.Successful)
-    {
-        //Here a should make the seed.
-    }
-
-    if (!result.Successful)
-    {
-        Environment.ExitCode = 3;
-        Console.WriteLine(result.Error.Message);
-    }
-}
 
 // Apply migration pending migrations
 async Task ApplyMigrationAsync()

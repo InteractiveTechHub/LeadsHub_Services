@@ -13,5 +13,7 @@ namespace LeadsHub.Core.Models
         public long SalesPipelineId { get; set; }
 
         public List<LeadStage> Leads { get; set; } = [];
+
+        public SalesPipeline SalesPipeline { get; set; } = new();
     }
 }

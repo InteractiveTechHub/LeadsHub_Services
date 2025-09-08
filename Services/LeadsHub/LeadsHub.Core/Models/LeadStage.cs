@@ -14,5 +14,8 @@
         public DateTimeOffset MovedAt { get; set; }
 
         public LeadCard LeadCard { get; set; } = new();
+
+        public Lead Lead { get; set; } = new();
+        public PipelineStage PipelineStage { get; set; } = new();
     }
 }

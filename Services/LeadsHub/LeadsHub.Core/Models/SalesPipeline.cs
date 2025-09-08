@@ -15,5 +15,8 @@ namespace LeadsHub.Core.Models
         public int Position { get; set; }
 
         public List<PipelineStage> Stages { get; set; } = [];
+
+        public Company Company { get; set; } = new();
+        public Consultant? Consultant { get; set; }
     }
 }

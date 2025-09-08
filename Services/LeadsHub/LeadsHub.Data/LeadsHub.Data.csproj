@@ -9,14 +9,12 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
 	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LeadsHub.Core\LeadsHub.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Commands\20242112_Create_Tables.sql" />
-  </ItemGroup>
 
 </Project>

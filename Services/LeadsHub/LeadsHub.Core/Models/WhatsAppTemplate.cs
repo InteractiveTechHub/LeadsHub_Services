@@ -46,5 +46,7 @@ namespace LeadsHub.Core.Models
         /// Enable or disable the template in CRM (not in the meta)
         /// </summary>
         public bool Enabled { get; set; }
+
+        public WhatsAppConfig WhatsAppConfig { get; set; } = new();
     }
 }

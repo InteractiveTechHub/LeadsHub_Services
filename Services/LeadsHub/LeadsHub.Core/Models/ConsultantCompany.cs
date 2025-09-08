@@ -17,5 +17,8 @@ namespace LeadsHub.Core.Models
         /// Company Id
         /// </summary>
         public long CompanyId { get; set; }
+
+        public Consultant Consultant { get; set; } = new();
+        public Company Company { get; set; } = new();
     }
 }

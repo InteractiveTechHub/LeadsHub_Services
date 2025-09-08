@@ -2,17 +2,13 @@
 
 namespace LeadsHub.Core.Models
 {
-    public class Integration
+    public class Integration : BaseModel
     {
-        public long Id { get; set; }
-
         public long CompanyId { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public long? WhatsAppConfigId { get; set; }
 
-        public IntegrationType Type { get; set; }
-
-        public long WhatsAppConfigId { get; set; }
+        public Company Company { get; set; } = new();
 
         public WhatsAppConfig? WhatsAppConfig { get; set; }
     }

@@ -20,8 +20,6 @@ namespace LeadsHub.Core.Models
         /// </summary>
         public string FullName { get; set; } = string.Empty;
 
-        public DateTimeOffset TimeLastLeadAssigned { get; set; }
-
         /// <summary>
         /// The name that user wants to be called by the system
         /// </summary>
@@ -30,7 +28,9 @@ namespace LeadsHub.Core.Models
         /// <summary>
         /// Photo of the consultant/user
         /// </summary>
-        public string PhotoUrl { get; set; } = string.Empty;        
+        public string PhotoUrl { get; set; } = string.Empty;
+
+        public DateTimeOffset? TimeLastLeadAssigned { get; set; }        
 
         public ICollection<Company> Companies { get; set; } = [];
 

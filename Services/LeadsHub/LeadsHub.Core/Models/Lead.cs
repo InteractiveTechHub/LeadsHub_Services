@@ -22,6 +22,8 @@ namespace LeadsHub.Core.Models
 
         public long IntegrationId { get; set; }
 
+        public string AdCode { get; set; } = string.Empty;
+
         public LeadPhase Phase { get; set; } = LeadPhase.New;
 
         public LeadStatus Status { get; set; } = LeadStatus.Active;
@@ -33,6 +35,8 @@ namespace LeadsHub.Core.Models
         public Contact Contact { get; set; } = new();
 
         public Integration Integration { get; set; } = new();
+
+        public Company Company { get; set; } = new();
 
         public List<Timeline> Timelines { get; set; } = [];
     }

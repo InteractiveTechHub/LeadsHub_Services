@@ -20,7 +20,7 @@ services:
     container_name: interactivedb
     restart: always
     ports:
-    - "3000:5432"
+    - "5432:5432"
     volumes:
     - interactive_data:/var/lib/postgresql/data
     networks:
