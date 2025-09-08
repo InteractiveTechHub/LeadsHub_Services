@@ -41,7 +41,7 @@ services:
     ports:
       - 2000:80
     environment:    
-      - PGADMIN_DEFAULT_EMAIL=jaksonjosesilva34@gmail.com
+      - PGADMIN_DEFAULT_EMAIL=admin@leadshub.local
       - PGADMIN_DEFAULT_PASSWORD=@Inter#123
     volumes:
       - pgadmin4:/var/lib/pgadmin
