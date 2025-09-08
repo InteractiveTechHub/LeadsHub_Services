@@ -1,6 +1,7 @@
 ﻿
 using AdaptiveKitCore.Enums;
 using AdaptiveKitCore.Requests;
+using InteractiveLeads.Core.Enums;
 using LeadsHub.Api.Services;
 using LeadsHub.Core.Dtos;
 using LeadsHub.Core.Identity;
@@ -51,8 +52,11 @@ namespace LeadsHub.Api.Controllers
                 filterRequest.AddFilter(nameof(Consultant.FullName), FilterOperatorEnum.Contains, FilterConnectorEnum.OR, request.GlobalFilter, "c", ignoreAccent: true);
             }
 
-            UserContext userContext = await _userContextService.GetUserContextAsync();
-            filterRequest.AddFilterDescriptors(userContext.FilterRequest.FilterDescriptors);
+            if (User.IsInRole(RolesEnum.Consultant.Name))
+            {
+                UserContext userContext = await _userContextService.GetUserContextAsync();
+                filterRequest.AddFilterDescriptors(userContext.FilterRequest.FilterDescriptors);
+            }
 
             LeadCardResponse response = await _leadManagerBac.FetchCardsByRequestAsync(filterRequest);
             if (response.HasAnyErrorMessage)

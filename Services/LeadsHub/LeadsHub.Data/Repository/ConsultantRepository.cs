@@ -165,13 +165,15 @@ namespace LeadsHub.Data.Repository
 
             try
             {
-                string querySql = "SELECT " +
-                                    "c.\"Id\" AS ConsultantId, " +
-                                    "array_agg(cp.\"CompanyId\") AS CompanyIds " +
-                                  "FROM \"Consultant\" c " +
-                                  "JOIN \"ConsultantCompany\" cp ON cp.\"ConsultantId\" = c.\"Id\" " +
-                                  "WHERE c.\"IdentityId\" = @UserId " +
-                                  "GROUP BY c.\"Id\" ";
+                //string querySql = "SELECT " +
+                //                    "c.\"Id\" AS ConsultantId, " +
+                //                    "array_agg(cp.\"CompanyId\") AS CompanyIds " +
+                //                  "FROM \"Consultant\" c " +
+                //                  "LEFT JOIN \"ConsultantCompany\" cp ON cp.\"ConsultantId\" = c.\"Id\" " +
+                //                  "WHERE c.\"IdentityId\" = @UserId " +
+                //                  "GROUP BY c.\"Id\" ";
+
+                string querySql = @"SELECT * FROM ""AspNetUsers"" WHERE ""Id"" = @userId";
 
                 UserContext? consultant = await _dbConnection.QueryFirstAsync<UserContext>(querySql, new { userId });
 

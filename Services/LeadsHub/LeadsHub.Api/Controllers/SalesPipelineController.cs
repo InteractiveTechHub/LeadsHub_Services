@@ -2,6 +2,7 @@
 using AdaptiveKitCore.Requests;
 using InteractiveLeads.Core.Enums;
 using LeadsHub.Api.Services;
+using LeadsHub.Core.Identity;
 using LeadsHub.Core.Interfaces.IBac;
 using LeadsHub.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +35,11 @@ namespace LeadsHub.Api.Controllers
         [HttpPost("fetch-pipelines")]
         public async Task<IActionResult> FetchPipelinesByRequestAsync([FromBody] FilterRequest filterRequest)
         {
-            var user = await _userContextService.GetUserContextAsync();
-            filterRequest.AddFilterDescriptors(filterRequest.FilterDescriptors);
+            if (User.IsInRole(RolesEnum.Consultant.Name))
+            {
+                UserContext userContext = await _userContextService.GetUserContextAsync();
+                filterRequest.AddFilterDescriptors(userContext.FilterRequest.FilterDescriptors);
+            }
 
             var response = await _salesPipelineBac.FetchPipelinesByRequestAsync(filterRequest);
             if (response.HasAnyErrorMessage)
